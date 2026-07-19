@@ -12,7 +12,7 @@ services:
       - "15432:5432"
 
     volumes:
-      - pg-swe-kata-data:/var/lib/postgresql/data
+      - pg-swe-kata-data:/var/lib/postgresql
 
 volumes:
   pg-swe-kata-data:
