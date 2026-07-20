@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: pg-swe-kata-replica
+    entrypoint: ["sleep", "infinity"]
+
+    environment:
+      TZ: Asia/Kathmandu
+
+    ports:
+      - "25432:5432"
+
+    volumes:
+      - pg-swe-kata-replica-data:/var/lib/postgresql
+
+volumes:
+  pg-swe-kata-replica-data:
