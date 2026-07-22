@@ -6,9 +6,8 @@ import (
 	"os"
 
 	"dvdrental-api/config"
+	"dvdrental-api/routes"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 )
 
@@ -18,20 +17,14 @@ func main() {
 	}
 
 	config.ConnectDB()
-
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World!"))
-	})
+	router := routes.SetupRouter()
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 	server := &http.Server{
-		Handler: r,
+		Handler: router,
 		Addr:    ":" + port,
 	}
 
