@@ -12,12 +12,12 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	dbURL := os.Getenv("DB_URL")
-	if dbURL == "" {
+	dsn := os.Getenv("DB_URL")
+	if dsn == "" {
 		log.Fatal("DB_URL is not set")
 	}
 
-	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
