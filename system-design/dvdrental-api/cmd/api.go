@@ -5,8 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
+	"dvdrental-api/internal/films"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
 )
 
 type config struct {
@@ -20,6 +24,7 @@ type dbConfig struct {
 
 type application struct {
 	config config
+	db     *pgx.Conn
 }
 
 func (app *application) mount() http.Handler {
@@ -39,6 +44,10 @@ func (app *application) mount() http.Handler {
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("all good\n"))
 	})
+
+	filmServcice := films.NewService(repo.New(app.db))
+	filmHandler := films.NewHandler(filmServcice)
+	r.Get("/films", filmHandler.GetFilms)
 
 	return r
 }
