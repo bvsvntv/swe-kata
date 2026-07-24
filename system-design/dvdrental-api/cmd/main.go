@@ -17,7 +17,7 @@ func main() {
 	slog.SetDefault(logger)
 
 	if err := godotenv.Load(); err != nil {
-		logger.Info("Couldn't load .utils file.", "error", err.Error())
+		logger.Info("Couldn't load .env file.", "error", err.Error())
 	}
 
 	cfg := config{
