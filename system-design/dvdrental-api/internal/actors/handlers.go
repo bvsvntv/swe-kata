@@ -1,13 +1,12 @@
 package actors
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
-	"dvdrental-api/internal/json"
 	"dvdrental-api/internal/types"
+	"dvdrental-api/internal/utils"
 )
 
 type handler struct {
@@ -41,8 +40,7 @@ func (h *handler) GetActors(w http.ResponseWriter, r *http.Request) {
 
 	actors, total, err := h.service.GetActors(r.Context(), arg)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	totalPages := (int(total) + limit - 1) / limit
@@ -59,5 +57,5 @@ func (h *handler) GetActors(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	json.Write(w, http.StatusOK, resp)
+	utils.RespondWithJSON(w, http.StatusOK, resp)
 }
