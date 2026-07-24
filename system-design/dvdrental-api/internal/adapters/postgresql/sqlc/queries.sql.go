@@ -9,6 +9,20 @@ import (
 	"context"
 )
 
+const countActors = `-- name: CountActors :one
+SELECT
+    COUNT(*)
+FROM
+    actor
+`
+
+func (q *Queries) CountActors(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countActors)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countFilms = `-- name: CountFilms :one
 SELECT
     COUNT(*)
@@ -21,6 +35,45 @@ func (q *Queries) CountFilms(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const getActors = `-- name: GetActors :many
+SELECT
+    actor_id, first_name, last_name, last_update
+FROM 
+    actor
+LIMIT $1
+OFFSET $2
+`
+
+type GetActorsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetActors(ctx context.Context, arg GetActorsParams) ([]Actor, error) {
+	rows, err := q.db.Query(ctx, getActors, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Actor
+	for rows.Next() {
+		var i Actor
+		if err := rows.Scan(
+			&i.ActorID,
+			&i.FirstName,
+			&i.LastName,
+			&i.LastUpdate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getFilms = `-- name: GetFilms :many

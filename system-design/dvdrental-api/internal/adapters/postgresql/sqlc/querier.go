@@ -9,7 +9,9 @@ import (
 )
 
 type Querier interface {
+	CountActors(ctx context.Context) (int64, error)
 	CountFilms(ctx context.Context) (int64, error)
+	GetActors(ctx context.Context, arg GetActorsParams) ([]Actor, error)
 	GetFilms(ctx context.Context, arg GetFilmsParams) ([]Film, error)
 }
 

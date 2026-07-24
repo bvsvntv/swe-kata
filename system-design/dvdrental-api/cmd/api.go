@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"dvdrental-api/internal/actors"
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/films"
 
@@ -48,6 +49,10 @@ func (app *application) mount() http.Handler {
 	filmServcice := films.NewService(repo.New(app.db))
 	filmHandler := films.NewHandler(filmServcice)
 	r.Get("/films", filmHandler.GetFilms)
+
+	actorServcice := actors.NewService(repo.New(app.db))
+	actorHandler := actors.NewHandler(actorServcice)
+	r.Get("/actors", actorHandler.GetActors)
 
 	return r
 }
