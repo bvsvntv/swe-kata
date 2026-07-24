@@ -3,7 +3,7 @@ package env
 import "os"
 
 func GetString(key, fallback string) string {
-	if val := os.Getenv(key); val != "" {
+	if val, ok := os.LookupEnv(key); ok {
 		return val
 	}
 

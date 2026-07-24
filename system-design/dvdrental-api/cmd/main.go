@@ -8,19 +8,24 @@ import (
 	"dvdrental-api/internal/env"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Logger
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
+	if err := godotenv.Load(); err != nil {
+		logger.Info("Couldn't load .env file.", "error", err.Error())
+	}
+
 	cfg := config{
-		addr: env.GetString(":"+"PORT", ":18000"),
+		addr: env.GetString("PORT", "8000"),
 		db: dbConfig{
 			dsn: env.GetString("DB_URL", "postgres://postgres:postgres@localhost:15432/dvdrental?sslmode=disable"),
 		},
 	}
-
-	// Logger
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	slog.SetDefault(logger)
 
 	// Database
 	ctx := context.Background()
