@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	GetFilms(ctx context.Context) ([]repo.Film, error)
+	GetFilms(ctx context.Context, arg repo.GetFilmsParams) ([]repo.Film, int64, error)
 }
 
 type svc struct {
@@ -19,6 +19,16 @@ func NewService(repo repo.Querier) Service {
 	return &svc{repo: repo}
 }
 
-func (s *svc) GetFilms(ctx context.Context) ([]repo.Film, error) {
-	return s.repo.GetFilms(ctx)
+func (s *svc) GetFilms(ctx context.Context, arg repo.GetFilmsParams) ([]repo.Film, int64, error) {
+	films, err := s.repo.GetFilms(ctx, arg)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	total, err := s.repo.CountFilms(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return films, total, nil
 }

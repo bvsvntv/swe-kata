@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func Write(w http.ResponseWriter, status int, data any) {
+func Write(w http.ResponseWriter, status int, res any) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
+	json.NewEncoder(w).Encode(res)
 }

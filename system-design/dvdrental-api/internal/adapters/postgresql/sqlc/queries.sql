@@ -1,2 +1,13 @@
 -- name: GetFilms :many
-SELECT * FROM film;
+SELECT
+    *
+FROM 
+    film
+LIMIT $1
+OFFSET $2;
+
+-- name: CountFilms :one
+SELECT
+    COUNT(*)
+FROM
+    film;
