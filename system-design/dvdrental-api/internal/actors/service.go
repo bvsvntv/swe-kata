@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	GetActors(ctx context.Context, arg repo.GetActorsParams) ([]repo.Actor, int64, error)
+	FetchActors(ctx context.Context, arg repo.FetchActorsParams) ([]repo.Actor, int64, error)
 }
 
 type svc struct {
@@ -19,8 +19,8 @@ func NewService(repo repo.Querier) Service {
 	return &svc{repo: repo}
 }
 
-func (s *svc) GetActors(ctx context.Context, arg repo.GetActorsParams) ([]repo.Actor, int64, error) {
-	actors, err := s.repo.GetActors(ctx, arg)
+func (s *svc) FetchActors(ctx context.Context, arg repo.FetchActorsParams) ([]repo.Actor, int64, error) {
+	actors, err := s.repo.FetchActors(ctx, arg)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -19,7 +19,7 @@ func NewHandler(s Service) *handler {
 	}
 }
 
-func (h *handler) GetActors(w http.ResponseWriter, r *http.Request) {
+func (h *handler) FetchActors(w http.ResponseWriter, r *http.Request) {
 	// Extract page, limit from query parameters
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil || page < 1 {
@@ -33,12 +33,12 @@ func (h *handler) GetActors(w http.ResponseWriter, r *http.Request) {
 	// Calculate offset
 	offset := (page - 1) * limit
 
-	arg := repo.GetActorsParams{
+	arg := repo.FetchActorsParams{
 		Limit:  int32(limit),
 		Offset: int32(offset),
 	}
 
-	actors, total, err := h.service.GetActors(r.Context(), arg)
+	actors, total, err := h.service.FetchActors(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return

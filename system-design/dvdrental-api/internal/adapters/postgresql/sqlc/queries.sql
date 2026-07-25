@@ -1,4 +1,4 @@
--- name: GetFilms :many
+-- name: FetchFilms :many
 SELECT
     *
 FROM 
@@ -12,7 +12,7 @@ SELECT
 FROM
     film;
 
--- name: GetActors :many
+-- name: FetchActors :many
 SELECT
     *
 FROM 
