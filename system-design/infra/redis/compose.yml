@@ -1,0 +1,14 @@
+services:
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis-swe-kata
+    ports:
+      - "16379:6379"
+    command:
+      - redis-server
+      - --requirepass
+      - ro0T
+    volumes:
+      - redis-swe-kata-data:/data
+volumes:
+  redis-swe-kata-data:
