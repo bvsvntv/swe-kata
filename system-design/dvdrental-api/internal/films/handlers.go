@@ -80,7 +80,7 @@ func (h *handler) GetFilm(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		utils.RespondWithError(w, http.StatusNotFound, err.Error())
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
