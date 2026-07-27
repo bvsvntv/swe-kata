@@ -11,3 +11,11 @@ SELECT
     COUNT(*)
 FROM
     film;
+
+-- name: GetFilm :one
+SELECT
+    *
+FROM 
+    film
+WHERE film_id = $1
+LIMIT 1;

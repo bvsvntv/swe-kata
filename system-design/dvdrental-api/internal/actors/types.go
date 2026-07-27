@@ -9,3 +9,7 @@ type ActorsResponse struct {
 	Actors     []repo.Actor     `json:"actors"`
 	Pagination types.Pagination `json:"pagination"`
 }
+
+type ActorResponse struct {
+	Actor repo.Actor `json:"actor"`
+}

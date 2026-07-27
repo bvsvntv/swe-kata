@@ -70,3 +70,33 @@ func (q *Queries) FetchFilms(ctx context.Context, arg FetchFilmsParams) ([]Film,
 	}
 	return items, nil
 }
+
+const getFilm = `-- name: GetFilm :one
+SELECT
+    film_id, title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext
+FROM 
+    film
+WHERE film_id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetFilm(ctx context.Context, filmID int32) (Film, error) {
+	row := q.db.QueryRow(ctx, getFilm, filmID)
+	var i Film
+	err := row.Scan(
+		&i.FilmID,
+		&i.Title,
+		&i.Description,
+		&i.ReleaseYear,
+		&i.LanguageID,
+		&i.RentalDuration,
+		&i.RentalRate,
+		&i.Length,
+		&i.ReplacementCost,
+		&i.Rating,
+		&i.LastUpdate,
+		&i.SpecialFeatures,
+		&i.Fulltext,
+	)
+	return i, err
+}

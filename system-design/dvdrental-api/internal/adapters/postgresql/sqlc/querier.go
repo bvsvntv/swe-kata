@@ -13,6 +13,8 @@ type Querier interface {
 	CountFilms(ctx context.Context) (int64, error)
 	FetchActors(ctx context.Context, arg FetchActorsParams) ([]Actor, error)
 	FetchFilms(ctx context.Context, arg FetchFilmsParams) ([]Film, error)
+	GetActor(ctx context.Context, actorID int32) (Actor, error)
+	GetFilm(ctx context.Context, filmID int32) (Film, error)
 }
 
 var _ Querier = (*Queries)(nil)

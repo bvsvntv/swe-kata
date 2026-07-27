@@ -1,12 +1,17 @@
 package films
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 )
 
 type handler struct {
@@ -58,4 +63,28 @@ func (h *handler) FetchFilms(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, resp)
+}
+
+func (h *handler) GetFilm(w http.ResponseWriter, r *http.Request) {
+	filmIDString := chi.URLParam(r, "filmID")
+	filmID, err := strconv.Atoi(filmIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse film id: %v", err))
+		return
+	}
+
+	film, err := h.service.GetFilm(r.Context(), int32(filmID))
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			utils.RespondWithError(w, http.StatusNotFound, "film not found")
+			return
+		}
+
+		utils.RespondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, FilmResponse{
+		Film: film,
+	})
 }

@@ -49,10 +49,12 @@ func (app *application) mount() http.Handler {
 	filmServcice := films.NewService(repo.New(app.db))
 	filmHandler := films.NewHandler(filmServcice)
 	r.Get("/films", filmHandler.FetchFilms)
+	r.Get("/films/{filmID}", filmHandler.GetFilm)
 
 	actorServcice := actors.NewService(repo.New(app.db))
 	actorHandler := actors.NewHandler(actorServcice)
 	r.Get("/actors", actorHandler.FetchActors)
+	r.Get("/actors/{actorID}", actorHandler.GetActor)
 
 	return r
 }

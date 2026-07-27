@@ -61,3 +61,24 @@ func (q *Queries) FetchActors(ctx context.Context, arg FetchActorsParams) ([]Act
 	}
 	return items, nil
 }
+
+const getActor = `-- name: GetActor :one
+SELECT
+    actor_id, first_name, last_name, last_update
+FROM 
+    actor
+WHERE actor_id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetActor(ctx context.Context, actorID int32) (Actor, error) {
+	row := q.db.QueryRow(ctx, getActor, actorID)
+	var i Actor
+	err := row.Scan(
+		&i.ActorID,
+		&i.FirstName,
+		&i.LastName,
+		&i.LastUpdate,
+	)
+	return i, err
+}

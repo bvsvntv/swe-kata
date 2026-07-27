@@ -1,12 +1,17 @@
 package actors
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 )
 
 type handler struct {
@@ -58,4 +63,28 @@ func (h *handler) FetchActors(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, resp)
+}
+
+func (h *handler) GetActor(w http.ResponseWriter, r *http.Request) {
+	actorIDString := chi.URLParam(r, "actorID")
+	actorID, err := strconv.Atoi(actorIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse actor id: %v", err))
+		return
+	}
+
+	actor, err := h.service.GetActor(r.Context(), int32(actorID))
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			utils.RespondWithError(w, http.StatusNotFound, "actor not found")
+			return
+		}
+
+		utils.RespondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, ActorResponse{
+		Actor: actor,
+	})
 }

@@ -8,6 +8,7 @@ import (
 
 type Service interface {
 	FetchActors(ctx context.Context, arg repo.FetchActorsParams) ([]repo.Actor, int64, error)
+	GetActor(ctx context.Context, actorID int32) (repo.Actor, error)
 }
 
 type svc struct {
@@ -31,4 +32,8 @@ func (s *svc) FetchActors(ctx context.Context, arg repo.FetchActorsParams) ([]re
 	}
 
 	return actors, total, nil
+}
+
+func (s *svc) GetActor(ctx context.Context, actorID int32) (repo.Actor, error) {
+	return s.repo.GetActor(ctx, actorID)
 }
