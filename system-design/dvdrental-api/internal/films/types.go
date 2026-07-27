@@ -6,10 +6,12 @@ import (
 )
 
 type FilmsResponse struct {
-	Films      []repo.Film      `json:"films"`
-	Pagination types.Pagination `json:"pagination"`
+	types.MessageResponse
+	Films []repo.Film `json:"films"`
+	types.PaginatedResponse
 }
 
 type FilmResponse struct {
+	types.MessageResponse
 	Film repo.Film `json:"film"`
 }

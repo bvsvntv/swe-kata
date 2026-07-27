@@ -53,13 +53,18 @@ func (h *handler) FetchActors(w http.ResponseWriter, r *http.Request) {
 
 	resp := ActorsResponse{
 		Actors: actors,
-		Pagination: types.Pagination{
-			Page:        page,
-			Limit:       limit,
-			Total:       total,
-			TotalPages:  totalPages,
-			HasNextPage: page < totalPages,
-			HasPrevPage: page > 1,
+		PaginatedResponse: types.PaginatedResponse{
+			Pagination: types.Pagination{
+				Page:        page,
+				Limit:       limit,
+				Total:       total,
+				TotalPages:  totalPages,
+				HasNextPage: page < totalPages,
+				HasPrevPage: page > 1,
+			},
+		},
+		MessageResponse: types.MessageResponse{
+			Message: "Actors has been fetched successfully.",
 		},
 	}
 
@@ -87,6 +92,9 @@ func (h *handler) GetActor(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, ActorResponse{
 		Actor: actor,
+		MessageResponse: types.MessageResponse{
+			Message: "Actor detail has been fetched successfully.",
+		},
 	})
 }
 
@@ -110,6 +118,9 @@ func (h *handler) CreateActor(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusCreated, ActorResponse{
 		Actor: actor,
+		MessageResponse: types.MessageResponse{
+			Message: "Actor has been created successfully.",
+		},
 	})
 }
 

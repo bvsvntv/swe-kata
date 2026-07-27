@@ -8,3 +8,7 @@ type Pagination struct {
 	HasNextPage bool  `json:"has_next_page"`
 	HasPrevPage bool  `json:"has_prev_page"`
 }
+
+type PaginatedResponse struct {
+	Pagination Pagination `json:"pagination"`
+}

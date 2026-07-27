@@ -6,11 +6,13 @@ import (
 )
 
 type ActorsResponse struct {
-	Actors     []repo.Actor     `json:"actors"`
-	Pagination types.Pagination `json:"pagination"`
+	types.MessageResponse
+	Actors []repo.Actor `json:"actors"`
+	types.PaginatedResponse
 }
 
 type ActorResponse struct {
+	types.MessageResponse
 	Actor repo.Actor `json:"actor"`
 }
 

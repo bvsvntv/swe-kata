@@ -52,13 +52,18 @@ func (h *handler) FetchFilms(w http.ResponseWriter, r *http.Request) {
 
 	resp := FilmsResponse{
 		Films: films,
-		Pagination: types.Pagination{
-			Page:        page,
-			Limit:       limit,
-			Total:       total,
-			TotalPages:  totalPages,
-			HasNextPage: page < totalPages,
-			HasPrevPage: page > 1,
+		PaginatedResponse: types.PaginatedResponse{
+			Pagination: types.Pagination{
+				Page:        page,
+				Limit:       limit,
+				Total:       total,
+				TotalPages:  totalPages,
+				HasNextPage: page < totalPages,
+				HasPrevPage: page > 1,
+			},
+		},
+		MessageResponse: types.MessageResponse{
+			Message: "Films has been fetched successfully.",
 		},
 	}
 
@@ -86,5 +91,8 @@ func (h *handler) GetFilm(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, FilmResponse{
 		Film: film,
+		MessageResponse: types.MessageResponse{
+			Message: "Film detail has been fetched successfully.",
+		},
 	})
 }
