@@ -1,6 +1,7 @@
 package actors
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -76,7 +77,7 @@ func (h *handler) GetActor(w http.ResponseWriter, r *http.Request) {
 	actor, err := h.service.GetActor(r.Context(), int32(actorID))
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			utils.RespondWithError(w, http.StatusNotFound, "actor not found")
+			utils.RespondWithError(w, http.StatusNotFound, "Actor not found.")
 			return
 		}
 
@@ -87,4 +88,44 @@ func (h *handler) GetActor(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithJSON(w, http.StatusOK, ActorResponse{
 		Actor: actor,
 	})
+}
+
+func (h *handler) CreateActor(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	args := CreateActorRequest{}
+
+	err := decoder.Decode(&args)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
+		return
+	}
+
+	actor, err := h.service.CreateActor(r.Context(), repo.CreateActorParams{
+		FirstName: args.FirstName,
+		LastName:  args.LastName,
+	})
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create actor.\nERROR: %v", err))
+	}
+
+	utils.RespondWithJSON(w, http.StatusCreated, ActorResponse{
+		Actor: actor,
+	})
+}
+
+func (h *handler) DeleteActor(w http.ResponseWriter, r *http.Request) {
+	actorIDString := chi.URLParam(r, "actorID")
+	actorID, err := strconv.Atoi(actorIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse actor id: %v", err))
+		return
+	}
+
+	err = h.service.DeleteActor(r.Context(), int32(actorID))
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, "Failed to delete actor.")
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
 }

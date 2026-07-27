@@ -23,6 +23,43 @@ func (q *Queries) CountActors(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const createActor = `-- name: CreateActor :one
+INSERT INTO
+    actor
+(first_name, last_name, last_update)
+VALUES
+($1, $2, NOW())
+RETURNING actor_id, first_name, last_name, last_update
+`
+
+type CreateActorParams struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+func (q *Queries) CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error) {
+	row := q.db.QueryRow(ctx, createActor, arg.FirstName, arg.LastName)
+	var i Actor
+	err := row.Scan(
+		&i.ActorID,
+		&i.FirstName,
+		&i.LastName,
+		&i.LastUpdate,
+	)
+	return i, err
+}
+
+const deleteActor = `-- name: DeleteActor :exec
+DELETE FROM 
+    actor
+WHERE actor_id = $1
+`
+
+func (q *Queries) DeleteActor(ctx context.Context, actorID int32) error {
+	_, err := q.db.Exec(ctx, deleteActor, actorID)
+	return err
+}
+
 const fetchActors = `-- name: FetchActors :many
 SELECT
     actor_id, first_name, last_name, last_update

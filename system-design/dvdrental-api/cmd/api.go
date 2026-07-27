@@ -59,6 +59,8 @@ func (app *application) mount() http.Handler {
 	actorHandler := actors.NewHandler(actorServcice)
 	r.Get("/actors", actorHandler.FetchActors)
 	r.Get("/actors/{actorID}", actorHandler.GetActor)
+	r.Post("/actors", actorHandler.CreateActor)
+	r.Delete("/actors/{actorID}", actorHandler.DeleteActor)
 
 	return r
 }

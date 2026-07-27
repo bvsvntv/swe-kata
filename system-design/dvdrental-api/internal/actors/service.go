@@ -9,6 +9,8 @@ import (
 type Service interface {
 	FetchActors(ctx context.Context, arg repo.FetchActorsParams) ([]repo.Actor, int64, error)
 	GetActor(ctx context.Context, actorID int32) (repo.Actor, error)
+	CreateActor(ctx context.Context, arg repo.CreateActorParams) (repo.Actor, error)
+	DeleteActor(ctx context.Context, actorID int32) error
 }
 
 type svc struct {
@@ -36,4 +38,12 @@ func (s *svc) FetchActors(ctx context.Context, arg repo.FetchActorsParams) ([]re
 
 func (s *svc) GetActor(ctx context.Context, actorID int32) (repo.Actor, error) {
 	return s.repo.GetActor(ctx, actorID)
+}
+
+func (s *svc) CreateActor(ctx context.Context, arg repo.CreateActorParams) (repo.Actor, error) {
+	return s.repo.CreateActor(ctx, arg)
+}
+
+func (s *svc) DeleteActor(ctx context.Context, actorID int32) error {
+	return s.repo.DeleteActor(ctx, actorID)
 }

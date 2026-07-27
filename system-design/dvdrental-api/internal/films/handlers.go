@@ -76,7 +76,7 @@ func (h *handler) GetFilm(w http.ResponseWriter, r *http.Request) {
 	film, err := h.service.GetFilm(r.Context(), int32(filmID))
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			utils.RespondWithError(w, http.StatusNotFound, "film not found")
+			utils.RespondWithError(w, http.StatusNotFound, "Film not found")
 			return
 		}
 

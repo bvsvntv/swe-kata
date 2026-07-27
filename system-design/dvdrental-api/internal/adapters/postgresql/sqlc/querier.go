@@ -11,6 +11,8 @@ import (
 type Querier interface {
 	CountActors(ctx context.Context) (int64, error)
 	CountFilms(ctx context.Context) (int64, error)
+	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
+	DeleteActor(ctx context.Context, actorID int32) error
 	FetchActors(ctx context.Context, arg FetchActorsParams) ([]Actor, error)
 	FetchFilms(ctx context.Context, arg FetchFilmsParams) ([]Film, error)
 	GetActor(ctx context.Context, actorID int32) (Actor, error)
