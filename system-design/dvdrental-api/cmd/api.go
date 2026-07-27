@@ -8,6 +8,8 @@ import (
 	"dvdrental-api/internal/actors"
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/films"
+	"dvdrental-api/internal/types"
+	"dvdrental-api/internal/utils"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -42,8 +44,10 @@ func (app *application) mount() http.Handler {
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("all good\n"))
+	r.Get("/heartbeat", func(w http.ResponseWriter, r *http.Request) {
+		utils.RespondWithJSON(w, http.StatusOK, types.HeartbeatResponse{
+			Heartbeat: time.Now().UnixMilli(),
+		})
 	})
 
 	filmServcice := films.NewService(repo.New(app.db))
