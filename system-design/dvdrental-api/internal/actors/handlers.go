@@ -140,3 +140,71 @@ func (h *handler) DeleteActor(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
 }
+
+func (h *handler) UpdateActor(w http.ResponseWriter, r *http.Request) {
+	actorIDString := chi.URLParam(r, "actorID")
+	actorID, err := strconv.Atoi(actorIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse actor id: %v", err))
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	args := UpdateActorRequest{}
+
+	err = decoder.Decode(&args)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
+		return
+	}
+
+	actor, err := h.service.UpdateActor(r.Context(), repo.UpdateActorParams{
+		ActorID:   int32(actorID),
+		FirstName: args.FirstName,
+		LastName:  args.LastName,
+	})
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update actor.\nERROR: %v", err))
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, ActorResponse{
+		Actor: actor,
+		MessageResponse: types.MessageResponse{
+			Message: "Actor has been updated successfully.",
+		},
+	})
+}
+
+func (h *handler) UpdateActorPartial(w http.ResponseWriter, r *http.Request) {
+	actorIDString := chi.URLParam(r, "actorID")
+	actorID, err := strconv.Atoi(actorIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse actor id: %v", err))
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	args := UpdateActorRequest{}
+
+	err = decoder.Decode(&args)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
+		return
+	}
+
+	actor, err := h.service.UpdateActorPartial(r.Context(), repo.UpdateActorPartialParams{
+		ActorID:   int32(actorID),
+		FirstName: args.FirstName,
+		LastName:  args.LastName,
+	})
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update actor.\nERROR: %v", err))
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, ActorResponse{
+		Actor: actor,
+		MessageResponse: types.MessageResponse{
+			Message: "Actor has been updated successfully.",
+		},
+	})
+}

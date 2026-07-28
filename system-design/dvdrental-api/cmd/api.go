@@ -61,6 +61,8 @@ func (app *application) mount() http.Handler {
 	r.Get("/actors/{actorID}", actorHandler.GetActor)
 	r.Post("/actors", actorHandler.CreateActor)
 	r.Delete("/actors/{actorID}", actorHandler.DeleteActor)
+	r.Put("/actors/{actorID}", actorHandler.UpdateActor)
+	r.Patch("/actors/{actorID}", actorHandler.UpdateActorPartial)
 
 	return r
 }

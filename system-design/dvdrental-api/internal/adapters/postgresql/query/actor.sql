@@ -32,3 +32,21 @@ RETURNING *;
 DELETE FROM 
     actor
 WHERE actor_id = $1;
+
+-- name: UpdateActor :one
+UPDATE 
+    actor
+SET 
+    first_name = $2,
+    last_name = $3
+WHERE actor_id = $1
+RETURNING *;
+
+-- name: UpdateActorPartial :one
+UPDATE
+    actor
+SET
+    first_name = COLEASE(sqlc.narg(first_name), first_name),
+    last_name = COLEASE(sqlc.narg(last_name), last_name)
+WHERE actor_id = sqlc.arg(actor_id)
+RETURNING *;

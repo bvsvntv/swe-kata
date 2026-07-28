@@ -11,6 +11,8 @@ type Service interface {
 	GetActor(ctx context.Context, actorID int32) (repo.Actor, error)
 	CreateActor(ctx context.Context, arg repo.CreateActorParams) (repo.Actor, error)
 	DeleteActor(ctx context.Context, actorID int32) error
+	UpdateActor(ctx context.Context, arg repo.UpdateActorParams) (repo.Actor, error)
+	UpdateActorPartial(ctx context.Context, arg repo.UpdateActorPartialParams) (repo.Actor, error)
 }
 
 type svc struct {
@@ -46,4 +48,12 @@ func (s *svc) CreateActor(ctx context.Context, arg repo.CreateActorParams) (repo
 
 func (s *svc) DeleteActor(ctx context.Context, actorID int32) error {
 	return s.repo.DeleteActor(ctx, actorID)
+}
+
+func (s *svc) UpdateActor(ctx context.Context, arg repo.UpdateActorParams) (repo.Actor, error) {
+	return s.repo.UpdateActor(ctx, arg)
+}
+
+func (s *svc) UpdateActorPartial(ctx context.Context, arg repo.UpdateActorPartialParams) (repo.Actor, error) {
+	return s.repo.UpdateActorPartial(ctx, arg)
 }
