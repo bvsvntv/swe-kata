@@ -184,7 +184,7 @@ func (h *handler) UpdateActorPartial(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	args := UpdateActorRequest{}
+	args := UpdateActorPartialRequest{}
 
 	err = decoder.Decode(&args)
 	if err != nil {
@@ -194,8 +194,8 @@ func (h *handler) UpdateActorPartial(w http.ResponseWriter, r *http.Request) {
 
 	actor, err := h.service.UpdateActorPartial(r.Context(), repo.UpdateActorPartialParams{
 		ActorID:   int32(actorID),
-		FirstName: args.FirstName,
-		LastName:  args.LastName,
+		FirstName: utils.ToText(args.FirstName),
+		LastName:  utils.ToText(args.LastName),
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update actor.\nERROR: %v", err))

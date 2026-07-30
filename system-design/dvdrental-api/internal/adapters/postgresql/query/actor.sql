@@ -46,7 +46,7 @@ RETURNING *;
 UPDATE
     actor
 SET
-    first_name = COLEASE(sqlc.narg(first_name), first_name),
-    last_name = COLEASE(sqlc.narg(last_name), last_name)
-WHERE actor_id = sqlc.arg(actor_id)
+    first_name = COALESCE(sqlc.narg('first_name'), first_name),
+    last_name = COALESCE(sqlc.narg('last_name'), last_name)
+WHERE actor_id = sqlc.arg('actor_id')
 RETURNING *;
