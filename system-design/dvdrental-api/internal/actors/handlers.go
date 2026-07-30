@@ -208,3 +208,43 @@ func (h *handler) UpdateActorPartial(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 }
+
+func (h *handler) FetchActorFilms(w http.ResponseWriter, r *http.Request) {
+	actorIDString := chi.URLParam(r, "actorID")
+	actorID, err := strconv.Atoi(actorIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse actor id: %v", err))
+		return
+	}
+
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+
+	arg := repo.FetchActorFilmsParams{
+		ActorID: int16(actorID),
+		Limit:   int32(limit),
+		Offset:  int32(offset),
+	}
+
+	films, err := h.service.FetchActorFilms(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := ActorFilmsResponse{
+		Films: films,
+		MessageResponse: types.MessageResponse{
+			Message: "Films has been fetched successfully.",
+		},
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, resp)
+}

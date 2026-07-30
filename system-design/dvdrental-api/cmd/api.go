@@ -63,6 +63,7 @@ func (app *application) mount() http.Handler {
 	r.Delete("/actors/{actorID}", actorHandler.DeleteActor)
 	r.Put("/actors/{actorID}", actorHandler.UpdateActor)
 	r.Patch("/actors/{actorID}", actorHandler.UpdateActorPartial)
+	r.Get("/actors/{actorID}/films", actorHandler.FetchActorFilms)
 
 	return r
 }

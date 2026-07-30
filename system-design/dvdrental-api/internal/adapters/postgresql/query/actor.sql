@@ -50,3 +50,20 @@ SET
     last_name = COALESCE(sqlc.narg('last_name'), last_name)
 WHERE actor_id = sqlc.arg('actor_id')
 RETURNING *;
+
+-- name: FetchActorFilms :many
+SELECT
+    film.*
+FROM 
+    film
+JOIN 
+    film_actor 
+    ON
+    film_actor.film_id = film.film_id
+WHERE 
+    film_actor.actor_id = $1
+ORDER BY 
+    title
+DESC
+LIMIT $2
+OFFSET $3;

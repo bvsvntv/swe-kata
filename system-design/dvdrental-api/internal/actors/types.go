@@ -30,3 +30,8 @@ type UpdateActorPartialRequest struct {
 	FirstName *string `json:"first_name,omitempty"`
 	LastName  *string `json:"last_name,omitempty"`
 }
+
+type ActorFilmsResponse struct {
+	types.MessageResponse
+	Films []repo.Film `json:"films"`
+}
