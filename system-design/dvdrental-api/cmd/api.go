@@ -7,6 +7,7 @@ import (
 
 	"dvdrental-api/internal/actors"
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
+	"dvdrental-api/internal/categories"
 	"dvdrental-api/internal/films"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
@@ -64,6 +65,16 @@ func (app *application) mount() http.Handler {
 	r.Put("/actors/{actorID}", actorHandler.UpdateActor)
 	r.Patch("/actors/{actorID}", actorHandler.UpdateActorPartial)
 	r.Get("/actors/{actorID}/films", actorHandler.FetchActorFilms)
+
+	categoryServcice := categories.NewService(repo.New(app.db))
+	categoryHandler := categories.NewHandler(categoryServcice)
+	r.Get("/categories", categoryHandler.FetchCategories)
+	r.Get("/categories/{categoryID}", categoryHandler.GetCategory)
+	r.Post("/categories", categoryHandler.CreateCategory)
+	r.Delete("/categories/{categoryID}", categoryHandler.DeleteCategory)
+	r.Put("/categories/{categoryID}", categoryHandler.UpdateCategory)
+	r.Patch("/categories/{categoryID}", categoryHandler.UpdateCategoryPartial)
+	r.Get("/categories/{categoryID}/films", categoryHandler.FetchCategoryFilms)
 
 	return r
 }

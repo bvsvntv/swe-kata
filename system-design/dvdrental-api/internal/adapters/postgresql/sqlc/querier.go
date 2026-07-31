@@ -10,16 +10,24 @@ import (
 
 type Querier interface {
 	CountActors(ctx context.Context) (int64, error)
+	CountCategories(ctx context.Context) (int64, error)
 	CountFilms(ctx context.Context) (int64, error)
 	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
+	CreateCategory(ctx context.Context, name string) (Category, error)
 	DeleteActor(ctx context.Context, actorID int32) error
+	DeleteCategory(ctx context.Context, categoryID int32) error
 	FetchActorFilms(ctx context.Context, arg FetchActorFilmsParams) ([]Film, error)
 	FetchActors(ctx context.Context, arg FetchActorsParams) ([]Actor, error)
+	FetchCategories(ctx context.Context, arg FetchCategoriesParams) ([]Category, error)
+	FetchCategoryFilms(ctx context.Context, arg FetchCategoryFilmsParams) ([]Film, error)
 	FetchFilms(ctx context.Context, arg FetchFilmsParams) ([]Film, error)
 	GetActor(ctx context.Context, actorID int32) (Actor, error)
+	GetCategory(ctx context.Context, categoryID int32) (Category, error)
 	GetFilm(ctx context.Context, filmID int32) (Film, error)
 	UpdateActor(ctx context.Context, arg UpdateActorParams) (Actor, error)
 	UpdateActorPartial(ctx context.Context, arg UpdateActorPartialParams) (Actor, error)
+	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
+	UpdateCategoryPartial(ctx context.Context, arg UpdateCategoryPartialParams) (Category, error)
 }
 
 var _ Querier = (*Queries)(nil)
