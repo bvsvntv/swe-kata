@@ -19,3 +19,18 @@ FROM
     film
 WHERE film_id = $1
 LIMIT 1;
+
+-- name: FetchFilmActors :many
+SELECT
+    actor.*
+FROM 
+    actor
+JOIN 
+    film_actor 
+    ON
+    film_actor.actor_id = actor.actor_id
+WHERE 
+    film_actor.film_id = $1
+ORDER BY first_name ASC
+LIMIT $2
+OFFSET $3;

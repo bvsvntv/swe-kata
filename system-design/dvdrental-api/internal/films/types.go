@@ -15,3 +15,8 @@ type FilmResponse struct {
 	types.MessageResponse
 	Film repo.Film `json:"film"`
 }
+
+type FilmActorsResponse struct {
+	types.MessageResponse
+	Actors []repo.Actor `json:"actors"`
+}

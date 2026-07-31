@@ -73,9 +73,7 @@ JOIN
     film_actor.film_id = film.film_id
 WHERE 
     film_actor.actor_id = $1
-ORDER BY 
-    title
-DESC
+ORDER BY title ASC
 LIMIT $2
 OFFSET $3
 `

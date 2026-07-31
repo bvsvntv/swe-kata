@@ -23,6 +23,53 @@ func (q *Queries) CountFilms(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const fetchFilmActors = `-- name: FetchFilmActors :many
+SELECT
+    actor.actor_id, actor.first_name, actor.last_name, actor.last_update
+FROM 
+    actor
+JOIN 
+    film_actor 
+    ON
+    film_actor.actor_id = actor.actor_id
+WHERE 
+    film_actor.film_id = $1
+ORDER BY first_name ASC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchFilmActorsParams struct {
+	FilmID int16 `json:"film_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) FetchFilmActors(ctx context.Context, arg FetchFilmActorsParams) ([]Actor, error) {
+	rows, err := q.db.Query(ctx, fetchFilmActors, arg.FilmID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Actor
+	for rows.Next() {
+		var i Actor
+		if err := rows.Scan(
+			&i.ActorID,
+			&i.FirstName,
+			&i.LastName,
+			&i.LastUpdate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchFilms = `-- name: FetchFilms :many
 SELECT
     film_id, title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext

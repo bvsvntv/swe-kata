@@ -9,6 +9,7 @@ import (
 type Service interface {
 	FetchFilms(ctx context.Context, arg repo.FetchFilmsParams) ([]repo.Film, int64, error)
 	GetFilm(ctx context.Context, filmID int32) (repo.Film, error)
+	FetchFilmActors(ctx context.Context, arg repo.FetchFilmActorsParams) ([]repo.Actor, error)
 }
 
 type svc struct {
@@ -36,4 +37,8 @@ func (s *svc) FetchFilms(ctx context.Context, arg repo.FetchFilmsParams) ([]repo
 
 func (s *svc) GetFilm(ctx context.Context, filmID int32) (repo.Film, error) {
 	return s.repo.GetFilm(ctx, filmID)
+}
+
+func (s *svc) FetchFilmActors(ctx context.Context, arg repo.FetchFilmActorsParams) ([]repo.Actor, error) {
+	return s.repo.FetchFilmActors(ctx, arg)
 }
