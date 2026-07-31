@@ -97,9 +97,7 @@ JOIN
     film_category.film_id = film.film_id
 WHERE 
     film_category.category_id = $1
-ORDER BY 
-    title
-DESC
+ORDER BY title ASC
 LIMIT $2
 OFFSET $3
 `

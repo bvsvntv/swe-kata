@@ -101,7 +101,7 @@ func (h *handler) FetchFilmActors(w http.ResponseWriter, r *http.Request) {
 	actorIDString := chi.URLParam(r, "filmID")
 	filmID, err := strconv.Atoi(actorIDString)
 	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse actor id: %v", err))
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
 		return
 	}
 
@@ -131,6 +131,46 @@ func (h *handler) FetchFilmActors(w http.ResponseWriter, r *http.Request) {
 		Actors: actors,
 		MessageResponse: types.MessageResponse{
 			Message: "Actors has been fetched successfully.",
+		},
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, resp)
+}
+
+func (h *handler) FetchFilmCategories(w http.ResponseWriter, r *http.Request) {
+	actorIDString := chi.URLParam(r, "filmID")
+	filmID, err := strconv.Atoi(actorIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
+		return
+	}
+
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+
+	arg := repo.FetchFilmCategoriesParams{
+		FilmID: int16(filmID),
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	}
+
+	categories, err := h.service.FetchFilmCategories(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := FilmCategoriesResponse{
+		Categoryies: categories,
+		MessageResponse: types.MessageResponse{
+			Message: "Categories has been fetched successfully.",
 		},
 	}
 

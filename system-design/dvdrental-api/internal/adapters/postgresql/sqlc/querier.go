@@ -21,6 +21,7 @@ type Querier interface {
 	FetchCategories(ctx context.Context, arg FetchCategoriesParams) ([]Category, error)
 	FetchCategoryFilms(ctx context.Context, arg FetchCategoryFilmsParams) ([]Film, error)
 	FetchFilmActors(ctx context.Context, arg FetchFilmActorsParams) ([]Actor, error)
+	FetchFilmCategories(ctx context.Context, arg FetchFilmCategoriesParams) ([]Category, error)
 	FetchFilms(ctx context.Context, arg FetchFilmsParams) ([]Film, error)
 	GetActor(ctx context.Context, actorID int32) (Actor, error)
 	GetCategory(ctx context.Context, categoryID int32) (Category, error)

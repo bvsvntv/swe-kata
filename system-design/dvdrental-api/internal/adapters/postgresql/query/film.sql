@@ -34,3 +34,18 @@ WHERE
 ORDER BY first_name ASC
 LIMIT $2
 OFFSET $3;
+
+-- name: FetchFilmCategories :many
+SELECT
+    category.*
+FROM 
+    category
+JOIN 
+    film_category
+    ON
+    film_category.category_id = category.category_id
+WHERE 
+    film_category.film_id = $1
+ORDER BY name ASC
+LIMIT $2
+OFFSET $3;

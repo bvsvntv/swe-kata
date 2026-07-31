@@ -70,6 +70,48 @@ func (q *Queries) FetchFilmActors(ctx context.Context, arg FetchFilmActorsParams
 	return items, nil
 }
 
+const fetchFilmCategories = `-- name: FetchFilmCategories :many
+SELECT
+    category.category_id, category.name, category.last_update
+FROM 
+    category
+JOIN 
+    film_category
+    ON
+    film_category.category_id = category.category_id
+WHERE 
+    film_category.film_id = $1
+ORDER BY name ASC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchFilmCategoriesParams struct {
+	FilmID int16 `json:"film_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) FetchFilmCategories(ctx context.Context, arg FetchFilmCategoriesParams) ([]Category, error) {
+	rows, err := q.db.Query(ctx, fetchFilmCategories, arg.FilmID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Category
+	for rows.Next() {
+		var i Category
+		if err := rows.Scan(&i.CategoryID, &i.Name, &i.LastUpdate); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchFilms = `-- name: FetchFilms :many
 SELECT
     film_id, title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext
