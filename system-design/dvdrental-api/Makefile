@@ -1,3 +1,5 @@
 server:
 	go run cmd/*.go
-.PHONY: server
+sqlc:
+	sqlc generate
+.PHONY: server sqlc
