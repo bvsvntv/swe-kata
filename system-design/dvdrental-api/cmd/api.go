@@ -8,6 +8,7 @@ import (
 	"dvdrental-api/internal/actors"
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/categories"
+	"dvdrental-api/internal/countries"
 	"dvdrental-api/internal/films"
 	"dvdrental-api/internal/languages"
 	"dvdrental-api/internal/types"
@@ -83,6 +84,14 @@ func (app *application) mount() http.Handler {
 	languageHandler := languages.NewHandler(languageService)
 	r.Get("/languages", languageHandler.FetchLanguages)
 	r.Get("/languages/{languageID}", languageHandler.GetLanguage)
+
+	countryServcice := countries.NewService(repo.New(app.db))
+	countryHandler := countries.NewHandler(countryServcice)
+	r.Get("/countries", countryHandler.FetchCountries)
+	r.Get("/countries/{countryID}", countryHandler.GetCountry)
+	r.Post("/countries", countryHandler.CreateCountry)
+	r.Put("/countries/{countryID}", countryHandler.UpdateCountry)
+	r.Delete("/countries/{countryID}", countryHandler.DeleteCountry)
 
 	return r
 }
