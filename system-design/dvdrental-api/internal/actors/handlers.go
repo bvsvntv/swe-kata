@@ -138,7 +138,9 @@ func (h *handler) DeleteActor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, struct{}{})
+	utils.RespondWithJSON(w, http.StatusOK, types.MessageResponse{
+		Message: "Actor has been deleted successfully.",
+	})
 }
 
 func (h *handler) UpdateActor(w http.ResponseWriter, r *http.Request) {
