@@ -1,0 +1,31 @@
+package cities
+
+import (
+	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
+	"dvdrental-api/internal/types"
+)
+
+type CitiesResponse struct {
+	types.MessageResponse
+	Cities []repo.City `json:"cities"`
+	types.PaginatedResponse
+}
+
+type CityResponse struct {
+	types.MessageResponse
+	City repo.City `json:"city"`
+}
+
+type CreateCityRequest struct {
+	CountryID int32  `json:"country_id"`
+	City      string `json:"city"`
+}
+
+type UpdateCityRequest struct {
+	CountryID int32  `json:"country_id"`
+	City      string `json:"city"`
+}
+
+type UpdateCityPartialRequest struct {
+	City *string `json:"city,omitempty"`
+}

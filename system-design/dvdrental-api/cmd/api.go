@@ -8,6 +8,7 @@ import (
 	"dvdrental-api/internal/actors"
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/categories"
+	"dvdrental-api/internal/cities"
 	"dvdrental-api/internal/countries"
 	"dvdrental-api/internal/films"
 	"dvdrental-api/internal/languages"
@@ -70,8 +71,8 @@ func (app *application) mount() http.Handler {
 	r.Patch("/actors/{actorID}", actorHandler.UpdateActorPartial)
 	r.Get("/actors/{actorID}/films", actorHandler.FetchActorFilms)
 
-	categoryServcice := categories.NewService(repo.New(app.db))
-	categoryHandler := categories.NewHandler(categoryServcice)
+	categoryService := categories.NewService(repo.New(app.db))
+	categoryHandler := categories.NewHandler(categoryService)
 	r.Get("/categories", categoryHandler.FetchCategories)
 	r.Get("/categories/{categoryID}", categoryHandler.GetCategory)
 	r.Post("/categories", categoryHandler.CreateCategory)
@@ -85,13 +86,22 @@ func (app *application) mount() http.Handler {
 	r.Get("/languages", languageHandler.FetchLanguages)
 	r.Get("/languages/{languageID}", languageHandler.GetLanguage)
 
-	countryServcice := countries.NewService(repo.New(app.db))
-	countryHandler := countries.NewHandler(countryServcice)
+	countryService := countries.NewService(repo.New(app.db))
+	countryHandler := countries.NewHandler(countryService)
 	r.Get("/countries", countryHandler.FetchCountries)
 	r.Get("/countries/{countryID}", countryHandler.GetCountry)
 	r.Post("/countries", countryHandler.CreateCountry)
 	r.Put("/countries/{countryID}", countryHandler.UpdateCountry)
 	r.Delete("/countries/{countryID}", countryHandler.DeleteCountry)
+
+	cityService := cities.NewService(repo.New(app.db))
+	cityHandler := cities.NewHandler(cityService)
+	r.Get("/cities", cityHandler.FetchCities)
+	r.Get("/cities/{cityID}", cityHandler.GetCity)
+	r.Post("/cities", cityHandler.CreateCity)
+	r.Delete("/cities/{cityID}", cityHandler.DeleteCity)
+	r.Put("/cities/{cityID}", cityHandler.UpdateCity)
+	r.Patch("/cities/{cityID}", cityHandler.UpdateCityPartial)
 
 	return r
 }
