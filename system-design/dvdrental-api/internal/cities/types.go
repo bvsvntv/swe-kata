@@ -27,5 +27,6 @@ type UpdateCityRequest struct {
 }
 
 type UpdateCityPartialRequest struct {
-	City *string `json:"city,omitempty"`
+	CountryID *int32  `json:"country_id,omitempty"`
+	City      *string `json:"city,omitempty"`
 }

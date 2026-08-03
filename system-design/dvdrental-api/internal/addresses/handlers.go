@@ -221,7 +221,7 @@ func (h *handler) UpdateAddressPartial(w http.ResponseWriter, r *http.Request) {
 		PostalCode: utils.ToText(args.PostalCode),
 		Phone:      utils.ToText(args.Phone),
 	}
-	
+
 	if args.CityID != nil {
 		partialParams.CityID = pgtype.Int2{Int16: int16(*args.CityID), Valid: true}
 	}

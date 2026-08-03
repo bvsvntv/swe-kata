@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type handler struct {
@@ -190,10 +191,17 @@ func (h *handler) UpdateCityPartial(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	city, err := h.service.UpdateCityPartial(r.Context(), repo.UpdateCityPartialParams{
-		CityID: int32(cityID),
-		City:   utils.ToText(args.City),
-	})
+	partialParams := repo.UpdateCityPartialParams{
+		CityID:    int32(cityID),
+		CountryID: pgtype.Int2{Int16: int16(*args.CountryID), Valid: true},
+		City:      utils.ToText(args.City),
+	}
+
+	if args.CountryID != nil {
+		partialParams.CountryID = pgtype.Int2{Int16: int16(*args.CountryID), Valid: true}
+	}
+
+	city, err := h.service.UpdateCityPartial(r.Context(), partialParams)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update city.\nERROR: %v", err))
 	}

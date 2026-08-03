@@ -154,18 +154,20 @@ const updateCityPartial = `-- name: UpdateCityPartial :one
 UPDATE
     city
 SET
-    city = COALESCE($1, city)
-WHERE city_id = $2
+    country_id = COALESCE($1, country_id),
+    city = COALESCE($2, city)
+WHERE city_id = $3
 RETURNING city_id, city, country_id, last_update
 `
 
 type UpdateCityPartialParams struct {
-	City   pgtype.Text `json:"city"`
-	CityID int32       `json:"city_id"`
+	CountryID pgtype.Int2 `json:"country_id"`
+	City      pgtype.Text `json:"city"`
+	CityID    int32       `json:"city_id"`
 }
 
 func (q *Queries) UpdateCityPartial(ctx context.Context, arg UpdateCityPartialParams) (City, error) {
-	row := q.db.QueryRow(ctx, updateCityPartial, arg.City, arg.CityID)
+	row := q.db.QueryRow(ctx, updateCityPartial, arg.CountryID, arg.City, arg.CityID)
 	var i City
 	err := row.Scan(
 		&i.CityID,

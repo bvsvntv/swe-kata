@@ -46,6 +46,7 @@ RETURNING *;
 UPDATE
     city
 SET
+    country_id = COALESCE(sqlc.narg('country_id'), country_id),
     city = COALESCE(sqlc.narg('city'), city)
 WHERE city_id = sqlc.arg('city_id')
 RETURNING *;
