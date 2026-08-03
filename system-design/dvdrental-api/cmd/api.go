@@ -13,6 +13,7 @@ import (
 	"dvdrental-api/internal/countries"
 	"dvdrental-api/internal/films"
 	"dvdrental-api/internal/languages"
+	"dvdrental-api/internal/stores"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
 
@@ -113,6 +114,15 @@ func (app *application) mount() http.Handler {
 	r.Put("/addresses/{addressID}", addressHandler.UpdateAddress)
 	r.Patch("/addresses/{addressID}", addressHandler.UpdateAddressPartial)
 	r.Delete("/addresses/{addressID}", addressHandler.DeleteAddress)
+
+	storeService := stores.NewService(repo.New(app.db))
+	storeHandler := stores.NewHandler(storeService)
+	r.Get("/stores", storeHandler.FetchStores)
+	r.Get("/stores/{storeID}", storeHandler.GetStore)
+	r.Post("/stores", storeHandler.CreateStore)
+	r.Put("/stores/{storeID}", storeHandler.UpdateStore)
+	r.Patch("/stores/{storeID}", storeHandler.UpdateStorePartial)
+	r.Delete("/stores/{storeID}", storeHandler.DeleteStore)
 
 	return r
 }
