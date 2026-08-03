@@ -7,6 +7,7 @@ import (
 
 	"dvdrental-api/internal/actors"
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
+	"dvdrental-api/internal/addresses"
 	"dvdrental-api/internal/categories"
 	"dvdrental-api/internal/cities"
 	"dvdrental-api/internal/countries"
@@ -103,6 +104,15 @@ func (app *application) mount() http.Handler {
 	r.Delete("/cities/{cityID}", cityHandler.DeleteCity)
 	r.Put("/cities/{cityID}", cityHandler.UpdateCity)
 	r.Patch("/cities/{cityID}", cityHandler.UpdateCityPartial)
+
+	addressService := addresses.NewService(repo.New(app.db))
+	addressHandler := addresses.NewHandler(addressService)
+	r.Get("/addresses", addressHandler.FetchAddresses)
+	r.Get("/addresses/{addressID}", addressHandler.GetAddress)
+	r.Post("/addresses", addressHandler.CreateAddress)
+	r.Put("/addresses/{addressID}", addressHandler.UpdateAddress)
+	r.Patch("/addresses/{addressID}", addressHandler.UpdateAddressPartial)
+	r.Delete("/addresses/{addressID}", addressHandler.DeleteAddress)
 
 	return r
 }
