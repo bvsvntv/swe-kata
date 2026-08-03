@@ -16,12 +16,7 @@ type CityResponse struct {
 	City repo.City `json:"city"`
 }
 
-type CreateCityRequest struct {
-	CountryID int32  `json:"country_id"`
-	City      string `json:"city"`
-}
-
-type UpdateCityRequest struct {
+type CityRequest struct {
 	CountryID int32  `json:"country_id"`
 	City      string `json:"city"`
 }

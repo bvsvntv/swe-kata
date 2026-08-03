@@ -99,18 +99,16 @@ func (h *handler) GetActor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) CreateActor(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	args := CreateActorRequest{}
+	req := ActorRequest{}
 
-	err := decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	actor, err := h.service.CreateActor(r.Context(), repo.CreateActorParams{
-		FirstName: args.FirstName,
-		LastName:  args.LastName,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create actor.\nERROR: %v", err))
@@ -151,19 +149,17 @@ func (h *handler) UpdateActor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	args := UpdateActorRequest{}
+	req := ActorRequest{}
 
-	err = decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	actor, err := h.service.UpdateActor(r.Context(), repo.UpdateActorParams{
 		ActorID:   int32(actorID),
-		FirstName: args.FirstName,
-		LastName:  args.LastName,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update actor.\nERROR: %v", err))
@@ -185,19 +181,17 @@ func (h *handler) UpdateActorPartial(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	args := UpdateActorPartialRequest{}
+	req := UpdateActorPartialRequest{}
 
-	err = decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	actor, err := h.service.UpdateActorPartial(r.Context(), repo.UpdateActorPartialParams{
 		ActorID:   int32(actorID),
-		FirstName: utils.ToText(args.FirstName),
-		LastName:  utils.ToText(args.LastName),
+		FirstName: utils.ToText(req.FirstName),
+		LastName:  utils.ToText(req.LastName),
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update actor.\nERROR: %v", err))

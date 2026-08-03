@@ -97,16 +97,14 @@ func (h *handler) GetCountry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) CreateCountry(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	args := CreateCountryRequest{}
+	req := CountryRequest{}
 
-	err := decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	country, err := h.service.CreateCountry(r.Context(), args.Country)
+	country, err := h.service.CreateCountry(r.Context(), req.Country)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create country.\nERROR: %v", err))
 	}
@@ -146,18 +144,16 @@ func (h *handler) UpdateCountry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	args := UpdateCountryRequest{}
+	req := CountryRequest{}
 
-	err = decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	country, err := h.service.UpdateCountry(r.Context(), repo.UpdateCountryParams{
 		CountryID: int32(countryID),
-		Country:   args.Country,
+		Country:   req.Country,
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update country.\nERROR: %v", err))

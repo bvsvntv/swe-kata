@@ -16,11 +16,7 @@ type CategoryResponse struct {
 	Category repo.Category `json:"category"`
 }
 
-type CreateCategoryRequest struct {
-	Name string `json:"name"`
-}
-
-type UpdateCategoryRequest struct {
+type CategoryRequest struct {
 	Name string `json:"name"`
 }
 

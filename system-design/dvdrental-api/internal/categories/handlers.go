@@ -137,16 +137,14 @@ func (h *handler) FetchCategoryFilms(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	args := CreateCategoryRequest{}
+	req := CategoryRequest{}
 
-	err := decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	category, err := h.service.CreateCategory(r.Context(), args.Name)
+	category, err := h.service.CreateCategory(r.Context(), req.Name)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create category.\nERROR: %v", err))
 	}
@@ -186,18 +184,16 @@ func (h *handler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	args := UpdateCategoryRequest{}
+	req := CategoryRequest{}
 
-	err = decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	category, err := h.service.UpdateCategory(r.Context(), repo.UpdateCategoryParams{
 		CategoryID: int32(categoryID),
-		Name:       args.Name,
+		Name:       req.Name,
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update category.\nERROR: %v", err))
@@ -219,18 +215,16 @@ func (h *handler) UpdateCategoryPartial(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	args := UpdateCategoryPartialRequest{}
+	req := UpdateCategoryPartialRequest{}
 
-	err = decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	category, err := h.service.UpdateCategoryPartial(r.Context(), repo.UpdateCategoryPartialParams{
 		CategoryID: int32(categoryID),
-		Name:       utils.ToText(args.Name),
+		Name:       utils.ToText(req.Name),
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update category.\nERROR: %v", err))

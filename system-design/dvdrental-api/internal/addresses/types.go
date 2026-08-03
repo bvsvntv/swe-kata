@@ -16,16 +16,7 @@ type AddressResponse struct {
 	Address repo.Address `json:"address"`
 }
 
-type CreateAddressRequest struct {
-	Address    string  `json:"address"`
-	Address2   *string `json:"address2"`
-	District   string  `json:"district"`
-	CityID     int32   `json:"city_id"`
-	PostalCode *string `json:"postal_code"`
-	Phone      string  `json:"phone"`
-}
-
-type UpdateAddressRequest struct {
+type AddressRequest struct {
 	Address    string  `json:"address"`
 	Address2   *string `json:"address2"`
 	District   string  `json:"district"`

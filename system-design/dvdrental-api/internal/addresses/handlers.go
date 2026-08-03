@@ -99,25 +99,25 @@ func (h *handler) GetAddress(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) CreateAddress(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	args := CreateAddressRequest{}
+	req := AddressRequest{}
 
-	err := decoder.Decode(&args)
+	err := decoder.Decode(&req)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	createParams := repo.CreateAddressParams{
-		Address:  args.Address,
-		District: args.District,
-		CityID:   int16(args.CityID),
-		Phone:    args.Phone,
+		Address:  req.Address,
+		District: req.District,
+		CityID:   int16(req.CityID),
+		Phone:    req.Phone,
 	}
-	if args.Address2 != nil {
-		createParams.Address2 = pgtype.Text{String: *args.Address2, Valid: true}
+	if req.Address2 != nil {
+		createParams.Address2 = pgtype.Text{String: *req.Address2, Valid: true}
 	}
-	if args.PostalCode != nil {
-		createParams.PostalCode = pgtype.Text{String: *args.PostalCode, Valid: true}
+	if req.PostalCode != nil {
+		createParams.PostalCode = pgtype.Text{String: *req.PostalCode, Valid: true}
 	}
 
 	address, err := h.service.CreateAddress(r.Context(), createParams)
@@ -162,29 +162,29 @@ func (h *handler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	args := UpdateAddressRequest{}
+	req := AddressRequest{}
 
-	err = decoder.Decode(&args)
+	err = decoder.Decode(&req)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	updateParams := repo.UpdateAddressParams{
+	args := repo.UpdateAddressParams{
 		AddressID: int32(addressID),
-		Address:   args.Address,
-		District:  args.District,
-		CityID:    int16(args.CityID),
-		Phone:     args.Phone,
+		Address:   req.Address,
+		District:  req.District,
+		CityID:    int16(req.CityID),
+		Phone:     req.Phone,
 	}
-	if args.Address2 != nil {
-		updateParams.Address2 = pgtype.Text{String: *args.Address2, Valid: true}
+	if req.Address2 != nil {
+		args.Address2 = pgtype.Text{String: *req.Address2, Valid: true}
 	}
-	if args.PostalCode != nil {
-		updateParams.PostalCode = pgtype.Text{String: *args.PostalCode, Valid: true}
+	if req.PostalCode != nil {
+		args.PostalCode = pgtype.Text{String: *req.PostalCode, Valid: true}
 	}
 
-	address, err := h.service.UpdateAddress(r.Context(), updateParams)
+	address, err := h.service.UpdateAddress(r.Context(), args)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update address.\nERROR: %v", err))
 		return
@@ -207,28 +207,28 @@ func (h *handler) UpdateAddressPartial(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	args := UpdateAddressPartialRequest{}
+	req := UpdateAddressPartialRequest{}
 
-	err = decoder.Decode(&args)
+	err = decoder.Decode(&req)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	partialParams := repo.UpdateAddressPartialParams{
+	args := repo.UpdateAddressPartialParams{
 		AddressID:  int32(addressID),
-		Address:    utils.ToText(args.Address),
-		Address2:   utils.ToText(args.Address2),
-		District:   utils.ToText(args.District),
-		PostalCode: utils.ToText(args.PostalCode),
-		Phone:      utils.ToText(args.Phone),
+		Address:    utils.ToText(req.Address),
+		Address2:   utils.ToText(req.Address2),
+		District:   utils.ToText(req.District),
+		PostalCode: utils.ToText(req.PostalCode),
+		Phone:      utils.ToText(req.Phone),
 	}
 
-	if args.CityID != nil {
-		partialParams.CityID = pgtype.Int2{Int16: int16(*args.CityID), Valid: true}
+	if req.CityID != nil {
+		args.CityID = pgtype.Int2{Int16: int16(*req.CityID), Valid: true}
 	}
 
-	address, err := h.service.UpdateAddressPartial(r.Context(), partialParams)
+	address, err := h.service.UpdateAddressPartial(r.Context(), args)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update address.\nERROR: %v", err))
 		return

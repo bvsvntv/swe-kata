@@ -98,18 +98,16 @@ func (h *handler) GetCity(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) CreateCity(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	args := CreateCityRequest{}
+	req := CityRequest{}
 
-	err := decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	city, err := h.service.CreateCity(r.Context(), repo.CreateCityParams{
-		CountryID: int16(args.CountryID),
-		City:      args.City,
+		CountryID: int16(req.CountryID),
+		City:      req.City,
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create city.\nERROR: %v", err))
@@ -150,19 +148,17 @@ func (h *handler) UpdateCity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	args := UpdateCityRequest{}
+	req := CityRequest{}
 
-	err = decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	city, err := h.service.UpdateCity(r.Context(), repo.UpdateCityParams{
 		CityID:    int32(cityID),
-		CountryID: int16(args.CountryID),
-		City:      args.City,
+		CountryID: int16(req.CountryID),
+		City:      req.City,
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update city.\nERROR: %v", err))
@@ -184,26 +180,24 @@ func (h *handler) UpdateCityPartial(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	args := UpdateCityPartialRequest{}
+	req := UpdateCityPartialRequest{}
 
-	err = decoder.Decode(&args)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	partialParams := repo.UpdateCityPartialParams{
+	args := repo.UpdateCityPartialParams{
 		CityID:    int32(cityID),
-		CountryID: pgtype.Int2{Int16: int16(*args.CountryID), Valid: true},
-		City:      utils.ToText(args.City),
+		CountryID: pgtype.Int2{Int16: int16(*req.CountryID), Valid: true},
+		City:      utils.ToText(req.City),
 	}
 
-	if args.CountryID != nil {
-		partialParams.CountryID = pgtype.Int2{Int16: int16(*args.CountryID), Valid: true}
+	if req.CountryID != nil {
+		args.CountryID = pgtype.Int2{Int16: int16(*req.CountryID), Valid: true}
 	}
 
-	city, err := h.service.UpdateCityPartial(r.Context(), partialParams)
+	city, err := h.service.UpdateCityPartial(r.Context(), args)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update city.\nERROR: %v", err))
 	}

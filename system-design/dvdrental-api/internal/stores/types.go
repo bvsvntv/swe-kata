@@ -16,12 +16,7 @@ type StoreResponse struct {
 	Store repo.Store `json:"store"`
 }
 
-type CreateStoreRequest struct {
-	ManagerStaffID int16 `json:"manager_staff_id"`
-	AddressID      int16 `json:"address_id"`
-}
-
-type UpdateStoreRequest struct {
+type StoreRequest struct {
 	ManagerStaffID int16 `json:"manager_staff_id"`
 	AddressID      int16 `json:"address_id"`
 }

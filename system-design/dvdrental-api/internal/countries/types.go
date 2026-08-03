@@ -16,11 +16,7 @@ type CountryResponse struct {
 	Country repo.Country `json:"country"`
 }
 
-type CreateCountryRequest struct {
-	Country string `json:"country"`
-}
-
-type UpdateCountryRequest struct {
+type CountryRequest struct {
 	Country string `json:"country"`
 }
 
