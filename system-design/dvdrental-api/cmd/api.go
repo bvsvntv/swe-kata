@@ -93,6 +93,7 @@ func (app *application) mount() http.Handler {
 	r.Post("/countries", countryHandler.CreateCountry)
 	r.Put("/countries/{countryID}", countryHandler.UpdateCountry)
 	r.Delete("/countries/{countryID}", countryHandler.DeleteCountry)
+	r.Get("/countries/{countryID}/cities", countryHandler.FetchCountryCities)
 
 	cityService := cities.NewService(repo.New(app.db))
 	cityHandler := cities.NewHandler(cityService)

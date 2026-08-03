@@ -23,3 +23,8 @@ type CreateCountryRequest struct {
 type UpdateCountryRequest struct {
 	Country string `json:"country"`
 }
+
+type CountryCitiesResponse struct {
+	types.MessageResponse
+	Cities []repo.City `json:"cities"`
+}

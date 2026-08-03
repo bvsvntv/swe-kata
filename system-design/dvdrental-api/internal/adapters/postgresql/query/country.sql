@@ -40,3 +40,13 @@ SET
     country = $2
 WHERE country_id = $1
 RETURNING *;
+
+-- name: FetchCountryCities :many
+SELECT
+    city.*
+FROM
+    city
+WHERE city.country_id = $1
+ORDER BY city ASC
+LIMIT $2
+OFFSET $3;

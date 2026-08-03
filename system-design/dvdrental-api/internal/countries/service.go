@@ -12,6 +12,7 @@ type Service interface {
 	CreateCountry(ctx context.Context, country string) (repo.Country, error)
 	UpdateCountry(ctx context.Context, arg repo.UpdateCountryParams) (repo.Country, error)
 	DeleteCountry(ctx context.Context, countryID int32) error
+	FetchCountryCities(ctx context.Context, arg repo.FetchCountryCitiesParams) ([]repo.City, error)
 }
 
 type svc struct {
@@ -50,4 +51,8 @@ func (s *svc) UpdateCountry(ctx context.Context, arg repo.UpdateCountryParams) (
 
 func (s *svc) DeleteCountry(ctx context.Context, countryID int32) error {
 	return s.repo.DeleteCountry(ctx, countryID)
+}
+
+func (s *svc) FetchCountryCities(ctx context.Context, arg repo.FetchCountryCitiesParams) ([]repo.City, error) {
+	return s.repo.FetchCountryCities(ctx, arg)
 }

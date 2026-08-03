@@ -168,3 +168,42 @@ func (h *handler) UpdateCountry(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 }
+
+func (h *handler) FetchCountryCities(w http.ResponseWriter, r *http.Request) {
+	countryIDString := chi.URLParam(r, "countryID")
+	countryID, err := strconv.Atoi(countryIDString)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse country id: %v", err))
+		return
+	}
+
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+
+	arg := repo.FetchCountryCitiesParams{
+		CountryID: int16(countryID),
+		Limit:     int32(limit),
+		Offset:    int32(offset),
+	}
+
+	cities, err := h.service.FetchCountryCities(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, CountryCitiesResponse{
+		Cities: cities,
+		MessageResponse: types.MessageResponse{
+			Message: "Cities has been fetched successfully.",
+		},
+	})
+}

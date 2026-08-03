@@ -84,6 +84,48 @@ func (q *Queries) FetchCountries(ctx context.Context, arg FetchCountriesParams) 
 	return items, nil
 }
 
+const fetchCountryCities = `-- name: FetchCountryCities :many
+SELECT
+    city.city_id, city.city, city.country_id, city.last_update
+FROM
+    city
+WHERE city.country_id = $1
+ORDER BY city ASC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchCountryCitiesParams struct {
+	CountryID int16 `json:"country_id"`
+	Limit     int32 `json:"limit"`
+	Offset    int32 `json:"offset"`
+}
+
+func (q *Queries) FetchCountryCities(ctx context.Context, arg FetchCountryCitiesParams) ([]City, error) {
+	rows, err := q.db.Query(ctx, fetchCountryCities, arg.CountryID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []City
+	for rows.Next() {
+		var i City
+		if err := rows.Scan(
+			&i.CityID,
+			&i.City,
+			&i.CountryID,
+			&i.LastUpdate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCountry = `-- name: GetCountry :one
 SELECT
     country_id, country, last_update
