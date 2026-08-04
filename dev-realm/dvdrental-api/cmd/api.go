@@ -13,6 +13,7 @@ import (
 	"dvdrental-api/internal/countries"
 	"dvdrental-api/internal/films"
 	"dvdrental-api/internal/languages"
+	"dvdrental-api/internal/staffs"
 	"dvdrental-api/internal/stores"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
@@ -123,6 +124,15 @@ func (app *application) mount() http.Handler {
 	r.Put("/stores/{storeID}", storeHandler.UpdateStore)
 	r.Patch("/stores/{storeID}", storeHandler.UpdateStorePartial)
 	r.Delete("/stores/{storeID}", storeHandler.DeleteStore)
+
+	staffService := staffs.NewService(repo.New(app.db))
+	staffHandler := staffs.NewHandler(staffService)
+	r.Get("/staffs", staffHandler.FetchStaffs)
+	r.Get("/staffs/{staffID}", staffHandler.GetStaff)
+	r.Post("/staffs", staffHandler.CreateStaff)
+	r.Put("/staffs/{staffID}", staffHandler.UpdateStaff)
+	r.Patch("/staffs/{staffID}", staffHandler.UpdateStaffPartial)
+	r.Delete("/staffs/{staffID}", staffHandler.DeleteStaff)
 
 	return r
 }

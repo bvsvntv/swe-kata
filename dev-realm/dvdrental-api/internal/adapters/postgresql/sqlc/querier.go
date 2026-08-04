@@ -16,18 +16,21 @@ type Querier interface {
 	CountCountries(ctx context.Context) (int64, error)
 	CountFilms(ctx context.Context) (int64, error)
 	CountLanguages(ctx context.Context) (int64, error)
+	CountStaffs(ctx context.Context) (int64, error)
 	CountStores(ctx context.Context) (int64, error)
 	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
 	CreateAddress(ctx context.Context, arg CreateAddressParams) (Address, error)
 	CreateCategory(ctx context.Context, name string) (Category, error)
 	CreateCity(ctx context.Context, arg CreateCityParams) (City, error)
 	CreateCountry(ctx context.Context, country string) (Country, error)
+	CreateStaff(ctx context.Context, arg CreateStaffParams) (Staff, error)
 	CreateStore(ctx context.Context, arg CreateStoreParams) (Store, error)
 	DeleteActor(ctx context.Context, actorID int32) error
 	DeleteAddress(ctx context.Context, addressID int32) error
 	DeleteCategory(ctx context.Context, categoryID int32) error
 	DeleteCity(ctx context.Context, cityID int32) error
 	DeleteCountry(ctx context.Context, countryID int32) error
+	DeleteStaff(ctx context.Context, staffID int32) error
 	DeleteStore(ctx context.Context, storeID int32) error
 	FetchActorFilms(ctx context.Context, arg FetchActorFilmsParams) ([]Film, error)
 	FetchActors(ctx context.Context, arg FetchActorsParams) ([]Actor, error)
@@ -41,6 +44,7 @@ type Querier interface {
 	FetchFilmCategories(ctx context.Context, arg FetchFilmCategoriesParams) ([]Category, error)
 	FetchFilms(ctx context.Context, arg FetchFilmsParams) ([]Film, error)
 	FetchLanguages(ctx context.Context, arg FetchLanguagesParams) ([]Language, error)
+	FetchStaffs(ctx context.Context, arg FetchStaffsParams) ([]Staff, error)
 	FetchStores(ctx context.Context, arg FetchStoresParams) ([]Store, error)
 	GetActor(ctx context.Context, actorID int32) (Actor, error)
 	GetAddress(ctx context.Context, addressID int32) (Address, error)
@@ -49,6 +53,7 @@ type Querier interface {
 	GetCountry(ctx context.Context, countryID int32) (Country, error)
 	GetFilm(ctx context.Context, filmID int32) (Film, error)
 	GetLanguage(ctx context.Context, languageID int32) (Language, error)
+	GetStaff(ctx context.Context, staffID int32) (Staff, error)
 	GetStore(ctx context.Context, storeID int32) (Store, error)
 	UpdateActor(ctx context.Context, arg UpdateActorParams) (Actor, error)
 	UpdateActorPartial(ctx context.Context, arg UpdateActorPartialParams) (Actor, error)
@@ -59,6 +64,8 @@ type Querier interface {
 	UpdateCity(ctx context.Context, arg UpdateCityParams) (City, error)
 	UpdateCityPartial(ctx context.Context, arg UpdateCityPartialParams) (City, error)
 	UpdateCountry(ctx context.Context, arg UpdateCountryParams) (Country, error)
+	UpdateStaff(ctx context.Context, arg UpdateStaffParams) (Staff, error)
+	UpdateStaffPartial(ctx context.Context, arg UpdateStaffPartialParams) (Staff, error)
 	UpdateStore(ctx context.Context, arg UpdateStoreParams) (Store, error)
 	UpdateStorePartial(ctx context.Context, arg UpdateStorePartialParams) (Store, error)
 }
