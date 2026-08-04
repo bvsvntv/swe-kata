@@ -13,7 +13,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type handler struct {
@@ -108,16 +107,12 @@ func (h *handler) CreateAddress(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createParams := repo.CreateAddressParams{
-		Address:  req.Address,
-		District: req.District,
-		CityID:   int16(req.CityID),
-		Phone:    req.Phone,
-	}
-	if req.Address2 != nil {
-		createParams.Address2 = pgtype.Text{String: *req.Address2, Valid: true}
-	}
-	if req.PostalCode != nil {
-		createParams.PostalCode = pgtype.Text{String: *req.PostalCode, Valid: true}
+		Address:    req.Address,
+		District:   req.District,
+		CityID:     int16(req.CityID),
+		Phone:      req.Phone,
+		Address2:   utils.ToText(req.Address2),
+		PostalCode: utils.ToText(req.PostalCode),
 	}
 
 	address, err := h.service.CreateAddress(r.Context(), createParams)
@@ -171,17 +166,13 @@ func (h *handler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := repo.UpdateAddressParams{
-		AddressID: int32(addressID),
-		Address:   req.Address,
-		District:  req.District,
-		CityID:    int16(req.CityID),
-		Phone:     req.Phone,
-	}
-	if req.Address2 != nil {
-		args.Address2 = pgtype.Text{String: *req.Address2, Valid: true}
-	}
-	if req.PostalCode != nil {
-		args.PostalCode = pgtype.Text{String: *req.PostalCode, Valid: true}
+		AddressID:  int32(addressID),
+		Address:    req.Address,
+		District:   req.District,
+		CityID:     int16(req.CityID),
+		Phone:      req.Phone,
+		Address2:   utils.ToText(req.Address2),
+		PostalCode: utils.ToText(req.PostalCode),
 	}
 
 	address, err := h.service.UpdateAddress(r.Context(), args)
@@ -222,10 +213,7 @@ func (h *handler) UpdateAddressPartial(w http.ResponseWriter, r *http.Request) {
 		District:   utils.ToText(req.District),
 		PostalCode: utils.ToText(req.PostalCode),
 		Phone:      utils.ToText(req.Phone),
-	}
-
-	if req.CityID != nil {
-		args.CityID = pgtype.Int2{Int16: int16(*req.CityID), Valid: true}
+		CityID:     utils.ToInt2(req.CityID),
 	}
 
 	address, err := h.service.UpdateAddressPartial(r.Context(), args)

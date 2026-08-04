@@ -17,11 +17,11 @@ type CityResponse struct {
 }
 
 type CityRequest struct {
-	CountryID int32  `json:"country_id"`
+	CountryID int16  `json:"country_id"`
 	City      string `json:"city"`
 }
 
 type UpdateCityPartialRequest struct {
-	CountryID *int32  `json:"country_id,omitempty"`
+	CountryID *int16  `json:"country_id,omitempty"`
 	City      *string `json:"city,omitempty"`
 }

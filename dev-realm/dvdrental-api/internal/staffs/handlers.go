@@ -13,7 +13,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type handler struct {
@@ -212,18 +211,9 @@ func (h *handler) UpdateStaffPartial(w http.ResponseWriter, r *http.Request) {
 		Username:  utils.ToText(req.Username),
 		Email:     utils.ToText(req.Email),
 		Password:  utils.ToText(req.Password),
-	}
-
-	if req.AddressID != nil {
-		arg.AddressID = pgtype.Int2{Int16: *req.AddressID, Valid: true}
-	}
-
-	if req.StoreID != nil {
-		arg.StoreID = pgtype.Int2{Int16: *req.StoreID, Valid: true}
-	}
-
-	if req.Active != nil {
-		arg.Active = pgtype.Bool{Bool: *req.Active, Valid: true}
+		AddressID: utils.ToInt2(req.AddressID),
+		StoreID:   utils.ToInt2(req.StoreID),
+		Active:    utils.ToBool(req.Active),
 	}
 
 	staff, err := h.service.UpdateStaffPartial(r.Context(), arg)

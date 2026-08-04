@@ -13,7 +13,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type handler struct {
@@ -169,21 +168,9 @@ func (h *handler) UpdateStorePartial(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := repo.UpdateStorePartialParams{
-		StoreID: int32(storeID),
-	}
-
-	if req.ManagerStaffID != nil {
-		args.ManagerStaffID = pgtype.Int2{
-			Int16: *req.ManagerStaffID,
-			Valid: true,
-		}
-	}
-
-	if req.AddressID != nil {
-		args.AddressID = pgtype.Int2{
-			Int16: *req.AddressID,
-			Valid: true,
-		}
+		StoreID:        int32(storeID),
+		AddressID:      utils.ToInt2(req.AddressID),
+		ManagerStaffID: utils.ToInt2(req.ManagerStaffID),
 	}
 
 	store, err := h.service.UpdateStorePartial(r.Context(), args)
