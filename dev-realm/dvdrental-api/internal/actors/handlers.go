@@ -68,7 +68,7 @@ func (h *handler) GetActor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	actor, err := h.service.GetActor(r.Context(), int32(actorID))
+	actor, err := h.service.GetActor(r.Context(), actorID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			utils.RespondWithError(w, http.StatusNotFound, "Actor not found.")
@@ -121,7 +121,7 @@ func (h *handler) DeleteActor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.DeleteActor(r.Context(), int32(actorID))
+	err = h.service.DeleteActor(r.Context(), actorID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Failed to delete actor.")
 		return

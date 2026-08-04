@@ -15,6 +15,7 @@ type Querier interface {
 	CountCities(ctx context.Context) (int64, error)
 	CountCountries(ctx context.Context) (int64, error)
 	CountFilms(ctx context.Context) (int64, error)
+	CountInventories(ctx context.Context) (int64, error)
 	CountLanguages(ctx context.Context) (int64, error)
 	CountStaffs(ctx context.Context) (int64, error)
 	CountStores(ctx context.Context) (int64, error)
@@ -23,6 +24,7 @@ type Querier interface {
 	CreateCategory(ctx context.Context, name string) (Category, error)
 	CreateCity(ctx context.Context, arg CreateCityParams) (City, error)
 	CreateCountry(ctx context.Context, country string) (Country, error)
+	CreateInventory(ctx context.Context, arg CreateInventoryParams) (Inventory, error)
 	CreateStaff(ctx context.Context, arg CreateStaffParams) (Staff, error)
 	CreateStore(ctx context.Context, arg CreateStoreParams) (Store, error)
 	DeleteActor(ctx context.Context, actorID int32) error
@@ -30,6 +32,7 @@ type Querier interface {
 	DeleteCategory(ctx context.Context, categoryID int32) error
 	DeleteCity(ctx context.Context, cityID int32) error
 	DeleteCountry(ctx context.Context, countryID int32) error
+	DeleteInventory(ctx context.Context, inventoryID int32) error
 	DeleteStaff(ctx context.Context, staffID int32) error
 	DeleteStore(ctx context.Context, storeID int32) error
 	FetchActorFilms(ctx context.Context, arg FetchActorFilmsParams) ([]Film, error)
@@ -43,6 +46,7 @@ type Querier interface {
 	FetchFilmActors(ctx context.Context, arg FetchFilmActorsParams) ([]Actor, error)
 	FetchFilmCategories(ctx context.Context, arg FetchFilmCategoriesParams) ([]Category, error)
 	FetchFilms(ctx context.Context, arg FetchFilmsParams) ([]Film, error)
+	FetchInventories(ctx context.Context, arg FetchInventoriesParams) ([]Inventory, error)
 	FetchLanguages(ctx context.Context, arg FetchLanguagesParams) ([]Language, error)
 	FetchStaffs(ctx context.Context, arg FetchStaffsParams) ([]Staff, error)
 	FetchStores(ctx context.Context, arg FetchStoresParams) ([]Store, error)
@@ -52,6 +56,7 @@ type Querier interface {
 	GetCity(ctx context.Context, cityID int32) (City, error)
 	GetCountry(ctx context.Context, countryID int32) (Country, error)
 	GetFilm(ctx context.Context, filmID int32) (Film, error)
+	GetInventory(ctx context.Context, inventoryID int32) (Inventory, error)
 	GetLanguage(ctx context.Context, languageID int32) (Language, error)
 	GetStaff(ctx context.Context, staffID int32) (Staff, error)
 	GetStore(ctx context.Context, storeID int32) (Store, error)
