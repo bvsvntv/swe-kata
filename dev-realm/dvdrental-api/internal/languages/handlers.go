@@ -4,13 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -25,14 +23,8 @@ func NewHandler(s Service) *handler {
 }
 
 func (h *handler) FetchLanguages(w http.ResponseWriter, r *http.Request) {
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 1 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
 
 	offset := (page - 1) * limit
 
@@ -69,14 +61,13 @@ func (h *handler) FetchLanguages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) GetLanguage(w http.ResponseWriter, r *http.Request) {
-	languageIDString := chi.URLParam(r, "languageID")
-	actorID, err := strconv.Atoi(languageIDString)
+	languageID, err := utils.GetUrlID(r, "languageID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse language id: %v", err))
 		return
 	}
 
-	language, err := h.service.GetLanguage(r.Context(), int32(actorID))
+	language, err := h.service.GetLanguage(r.Context(), languageID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			utils.RespondWithError(w, http.StatusNotFound, "Language not found.")

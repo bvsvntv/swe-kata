@@ -1,17 +1,14 @@
 package staffs
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -26,14 +23,8 @@ func NewHandler(s Service) *handler {
 }
 
 func (h *handler) FetchStaffs(w http.ResponseWriter, r *http.Request) {
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 1 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
 
 	offset := (page - 1) * limit
 
@@ -70,14 +61,13 @@ func (h *handler) FetchStaffs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) GetStaff(w http.ResponseWriter, r *http.Request) {
-	staffIDString := chi.URLParam(r, "staffID")
-	staffID, err := strconv.Atoi(staffIDString)
+	staffID, err := utils.GetUrlID(r, "staffID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse staff id: %v", err))
 		return
 	}
 
-	staff, err := h.service.GetStaff(r.Context(), int32(staffID))
+	staff, err := h.service.GetStaff(r.Context(), staffID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			utils.RespondWithError(w, http.StatusNotFound, "Staff not found.")
@@ -99,7 +89,7 @@ func (h *handler) GetStaff(w http.ResponseWriter, r *http.Request) {
 func (h *handler) CreateStaff(w http.ResponseWriter, r *http.Request) {
 	req := StaffRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
@@ -130,14 +120,13 @@ func (h *handler) CreateStaff(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) DeleteStaff(w http.ResponseWriter, r *http.Request) {
-	staffIDString := chi.URLParam(r, "staffID")
-	staffID, err := strconv.Atoi(staffIDString)
+	staffID, err := utils.GetUrlID(r, "staffID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse staff id: %v", err))
 		return
 	}
 
-	err = h.service.DeleteStaff(r.Context(), int32(staffID))
+	err = h.service.DeleteStaff(r.Context(), staffID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Failed to delete staff.")
 		return
@@ -149,8 +138,7 @@ func (h *handler) DeleteStaff(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) UpdateStaff(w http.ResponseWriter, r *http.Request) {
-	staffIDString := chi.URLParam(r, "staffID")
-	staffID, err := strconv.Atoi(staffIDString)
+	staffID, err := utils.GetUrlID(r, "staffID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse staff id: %v", err))
 		return
@@ -158,13 +146,13 @@ func (h *handler) UpdateStaff(w http.ResponseWriter, r *http.Request) {
 
 	req := StaffRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	arg := repo.UpdateStaffParams{
-		StaffID:   int32(staffID),
+		StaffID:   staffID,
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Username:  req.Username,
@@ -190,8 +178,7 @@ func (h *handler) UpdateStaff(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) UpdateStaffPartial(w http.ResponseWriter, r *http.Request) {
-	staffIDString := chi.URLParam(r, "staffID")
-	staffID, err := strconv.Atoi(staffIDString)
+	staffID, err := utils.GetUrlID(r, "staffID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse staff id: %v", err))
 		return
@@ -199,13 +186,13 @@ func (h *handler) UpdateStaffPartial(w http.ResponseWriter, r *http.Request) {
 
 	req := UpdateStaffPartialRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
 	arg := repo.UpdateStaffPartialParams{
-		StaffID:   int32(staffID),
+		StaffID:   staffID,
 		FirstName: utils.ToText(req.FirstName),
 		LastName:  utils.ToText(req.LastName),
 		Username:  utils.ToText(req.Username),

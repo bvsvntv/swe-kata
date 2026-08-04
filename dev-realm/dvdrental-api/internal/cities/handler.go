@@ -1,17 +1,14 @@
 package cities
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -26,14 +23,8 @@ func NewHandler(s Service) *handler {
 }
 
 func (h *handler) FetchCities(w http.ResponseWriter, r *http.Request) {
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 1 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
 
 	offset := (page - 1) * limit
 
@@ -70,14 +61,13 @@ func (h *handler) FetchCities(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) GetCity(w http.ResponseWriter, r *http.Request) {
-	cityIDString := chi.URLParam(r, "cityID")
-	cityID, err := strconv.Atoi(cityIDString)
+	cityID, err := utils.GetUrlID(r, "cityID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse city id: %v", err))
 		return
 	}
 
-	city, err := h.service.GetCity(r.Context(), int32(cityID))
+	city, err := h.service.GetCity(r.Context(), cityID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			utils.RespondWithError(w, http.StatusNotFound, "City not found.")
@@ -99,15 +89,17 @@ func (h *handler) GetCity(w http.ResponseWriter, r *http.Request) {
 func (h *handler) CreateCity(w http.ResponseWriter, r *http.Request) {
 	req := CityRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	city, err := h.service.CreateCity(r.Context(), repo.CreateCityParams{
+	arg := repo.CreateCityParams{
 		CountryID: int16(req.CountryID),
 		City:      req.City,
-	})
+	}
+
+	city, err := h.service.CreateCity(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create city.\nERROR: %v", err))
 		return
@@ -122,14 +114,13 @@ func (h *handler) CreateCity(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) DeleteCity(w http.ResponseWriter, r *http.Request) {
-	cityIDString := chi.URLParam(r, "cityID")
-	cityID, err := strconv.Atoi(cityIDString)
+	cityID, err := utils.GetUrlID(r, "cityID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse city id: %v", err))
 		return
 	}
 
-	err = h.service.DeleteCity(r.Context(), int32(cityID))
+	err = h.service.DeleteCity(r.Context(), cityID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Failed to delete city.")
 		return
@@ -141,8 +132,7 @@ func (h *handler) DeleteCity(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) UpdateCity(w http.ResponseWriter, r *http.Request) {
-	cityIDString := chi.URLParam(r, "cityID")
-	cityID, err := strconv.Atoi(cityIDString)
+	cityID, err := utils.GetUrlID(r, "cityID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse city id: %v", err))
 		return
@@ -150,16 +140,18 @@ func (h *handler) UpdateCity(w http.ResponseWriter, r *http.Request) {
 
 	req := CityRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	city, err := h.service.UpdateCity(r.Context(), repo.UpdateCityParams{
-		CityID:    int32(cityID),
+	arg := repo.UpdateCityParams{
+		CityID:    cityID,
 		CountryID: int16(req.CountryID),
 		City:      req.City,
-	})
+	}
+
+	city, err := h.service.UpdateCity(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update city.\nERROR: %v", err))
 		return
@@ -174,8 +166,7 @@ func (h *handler) UpdateCity(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) UpdateCityPartial(w http.ResponseWriter, r *http.Request) {
-	cityIDString := chi.URLParam(r, "cityID")
-	cityID, err := strconv.Atoi(cityIDString)
+	cityID, err := utils.GetUrlID(r, "cityID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse city id: %v", err))
 		return
@@ -183,18 +174,18 @@ func (h *handler) UpdateCityPartial(w http.ResponseWriter, r *http.Request) {
 
 	req := UpdateCityPartialRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	args := repo.UpdateCityPartialParams{
-		CityID:    int32(cityID),
+	arg := repo.UpdateCityPartialParams{
+		CityID:    cityID,
 		CountryID: utils.ToInt2(req.CountryID),
 		City:      utils.ToText(req.City),
 	}
 
-	city, err := h.service.UpdateCityPartial(r.Context(), args)
+	city, err := h.service.UpdateCityPartial(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update city.\nERROR: %v", err))
 		return

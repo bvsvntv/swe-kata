@@ -4,13 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -25,17 +23,9 @@ func NewHandler(s Service) *handler {
 }
 
 func (h *handler) FetchFilms(w http.ResponseWriter, r *http.Request) {
-	// Extract page, limit from query parameters
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 1 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
 
-	// Calculate offset
 	offset := (page - 1) * limit
 
 	arg := repo.FetchFilmsParams{
@@ -71,14 +61,13 @@ func (h *handler) FetchFilms(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) GetFilm(w http.ResponseWriter, r *http.Request) {
-	filmIDString := chi.URLParam(r, "filmID")
-	filmID, err := strconv.Atoi(filmIDString)
+	filmID, err := utils.GetUrlID(r, "filmID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse film id: %v", err))
 		return
 	}
 
-	film, err := h.service.GetFilm(r.Context(), int32(filmID))
+	film, err := h.service.GetFilm(r.Context(), filmID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			utils.RespondWithError(w, http.StatusNotFound, "Film not found")
@@ -98,21 +87,14 @@ func (h *handler) GetFilm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) FetchFilmActors(w http.ResponseWriter, r *http.Request) {
-	actorIDString := chi.URLParam(r, "filmID")
-	filmID, err := strconv.Atoi(actorIDString)
+	filmID, err := utils.GetUrlID(r, "filmID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
 		return
 	}
 
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 1 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
 	offset := (page - 1) * limit
 
 	arg := repo.FetchFilmActorsParams{
@@ -138,21 +120,15 @@ func (h *handler) FetchFilmActors(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) FetchFilmCategories(w http.ResponseWriter, r *http.Request) {
-	actorIDString := chi.URLParam(r, "filmID")
-	filmID, err := strconv.Atoi(actorIDString)
+	filmID, err := utils.GetUrlID(r, "filmID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
 		return
 	}
 
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 1 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
+
 	offset := (page - 1) * limit
 
 	arg := repo.FetchFilmCategoriesParams{

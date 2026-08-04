@@ -1,17 +1,14 @@
 package addresses
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	repo "dvdrental-api/internal/adapters/postgresql/sqlc"
 	"dvdrental-api/internal/types"
 	"dvdrental-api/internal/utils"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -26,14 +23,8 @@ func NewHandler(s Service) *handler {
 }
 
 func (h *handler) FetchAddresses(w http.ResponseWriter, r *http.Request) {
-	page, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || page < 1 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
 
 	offset := (page - 1) * limit
 
@@ -70,8 +61,7 @@ func (h *handler) FetchAddresses(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) GetAddress(w http.ResponseWriter, r *http.Request) {
-	addressIDString := chi.URLParam(r, "addressID")
-	addressID, err := strconv.Atoi(addressIDString)
+	addressID, err := utils.GetUrlID(r, "addressID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse address id: %v", err))
 		return
@@ -97,25 +87,23 @@ func (h *handler) GetAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) CreateAddress(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
 	req := AddressRequest{}
 
-	err := decoder.Decode(&req)
-	if err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	createParams := repo.CreateAddressParams{
+	arg := repo.CreateAddressParams{
 		Address:    req.Address,
 		District:   req.District,
-		CityID:     int16(req.CityID),
+		CityID:     req.CityID,
 		Phone:      req.Phone,
 		Address2:   utils.ToText(req.Address2),
 		PostalCode: utils.ToText(req.PostalCode),
 	}
 
-	address, err := h.service.CreateAddress(r.Context(), createParams)
+	address, err := h.service.CreateAddress(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create address.\nERROR: %v", err))
 		return
@@ -130,14 +118,13 @@ func (h *handler) CreateAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) DeleteAddress(w http.ResponseWriter, r *http.Request) {
-	addressIDString := chi.URLParam(r, "addressID")
-	addressID, err := strconv.Atoi(addressIDString)
+	addressID, err := utils.GetUrlID(r, "addressID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse address id: %v", err))
 		return
 	}
 
-	err = h.service.DeleteAddress(r.Context(), int32(addressID))
+	err = h.service.DeleteAddress(r.Context(), addressID)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Failed to delete address.")
 		return
@@ -149,23 +136,20 @@ func (h *handler) DeleteAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
-	addressIDString := chi.URLParam(r, "addressID")
-	addressID, err := strconv.Atoi(addressIDString)
+	addressID, err := utils.GetUrlID(r, "addressID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse address id: %v", err))
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
 	req := AddressRequest{}
 
-	err = decoder.Decode(&req)
-	if err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	args := repo.UpdateAddressParams{
+	arg := repo.UpdateAddressParams{
 		AddressID:  int32(addressID),
 		Address:    req.Address,
 		District:   req.District,
@@ -175,7 +159,7 @@ func (h *handler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 		PostalCode: utils.ToText(req.PostalCode),
 	}
 
-	address, err := h.service.UpdateAddress(r.Context(), args)
+	address, err := h.service.UpdateAddress(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update address.\nERROR: %v", err))
 		return
@@ -190,23 +174,20 @@ func (h *handler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) UpdateAddressPartial(w http.ResponseWriter, r *http.Request) {
-	addressIDString := chi.URLParam(r, "addressID")
-	addressID, err := strconv.Atoi(addressIDString)
+	addressID, err := utils.GetUrlID(r, "addressID")
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse address id: %v", err))
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
 	req := UpdateAddressPartialRequest{}
 
-	err = decoder.Decode(&req)
-	if err != nil {
+	if err := utils.DecodeJSON(r, &req); err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
 		return
 	}
 
-	args := repo.UpdateAddressPartialParams{
+	arg := repo.UpdateAddressPartialParams{
 		AddressID:  int32(addressID),
 		Address:    utils.ToText(req.Address),
 		Address2:   utils.ToText(req.Address2),
@@ -216,7 +197,7 @@ func (h *handler) UpdateAddressPartial(w http.ResponseWriter, r *http.Request) {
 		CityID:     utils.ToInt2(req.CityID),
 	}
 
-	address, err := h.service.UpdateAddressPartial(r.Context(), args)
+	address, err := h.service.UpdateAddressPartial(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update address.\nERROR: %v", err))
 		return
