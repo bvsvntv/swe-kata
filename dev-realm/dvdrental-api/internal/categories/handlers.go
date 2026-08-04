@@ -147,6 +147,7 @@ func (h *handler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 	category, err := h.service.CreateCategory(r.Context(), req.Name)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create category.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusCreated, CategoryResponse{
@@ -197,6 +198,7 @@ func (h *handler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update category.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, CategoryResponse{
@@ -228,6 +230,7 @@ func (h *handler) UpdateCategoryPartial(w http.ResponseWriter, r *http.Request) 
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update category.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, CategoryResponse{

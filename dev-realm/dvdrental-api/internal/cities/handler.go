@@ -111,6 +111,7 @@ func (h *handler) CreateCity(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create city.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusCreated, CityResponse{
@@ -162,6 +163,7 @@ func (h *handler) UpdateCity(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update city.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, CityResponse{
@@ -200,6 +202,7 @@ func (h *handler) UpdateCityPartial(w http.ResponseWriter, r *http.Request) {
 	city, err := h.service.UpdateCityPartial(r.Context(), args)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update city.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, CityResponse{

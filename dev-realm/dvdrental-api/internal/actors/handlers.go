@@ -112,6 +112,7 @@ func (h *handler) CreateActor(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create actor.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusCreated, ActorResponse{
@@ -163,6 +164,7 @@ func (h *handler) UpdateActor(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update actor.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, ActorResponse{
@@ -195,6 +197,7 @@ func (h *handler) UpdateActorPartial(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update actor.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, ActorResponse{

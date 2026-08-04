@@ -119,6 +119,7 @@ func (h *handler) CreateStaff(w http.ResponseWriter, r *http.Request) {
 	staff, err := h.service.CreateStaff(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create staff.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusCreated, StaffResponse{
@@ -228,6 +229,7 @@ func (h *handler) UpdateStaffPartial(w http.ResponseWriter, r *http.Request) {
 	staff, err := h.service.UpdateStaffPartial(r.Context(), arg)
 	if err != nil {
 		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update staff.\nERROR: %v", err))
+		return
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, StaffResponse{
