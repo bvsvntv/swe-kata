@@ -11,6 +11,7 @@ type Service interface {
 	GetFilm(ctx context.Context, filmID int32) (repo.Film, error)
 	FetchFilmActors(ctx context.Context, arg repo.FetchFilmActorsParams) ([]repo.Actor, error)
 	FetchFilmCategories(ctx context.Context, arg repo.FetchFilmCategoriesParams) ([]repo.Category, error)
+	FetchFilmInventory(ctx context.Context, arg repo.FetchFilmInventoryParams) ([]repo.Inventory, error)
 }
 
 type svc struct {
@@ -46,4 +47,8 @@ func (s *svc) FetchFilmActors(ctx context.Context, arg repo.FetchFilmActorsParam
 
 func (s *svc) FetchFilmCategories(ctx context.Context, arg repo.FetchFilmCategoriesParams) ([]repo.Category, error) {
 	return s.repo.FetchFilmCategories(ctx, arg)
+}
+
+func (s *svc) FetchFilmInventory(ctx context.Context, arg repo.FetchFilmInventoryParams) ([]repo.Inventory, error) {
+	return s.repo.FetchFilmInventory(ctx, arg)
 }

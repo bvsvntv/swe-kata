@@ -64,6 +64,7 @@ func (app *application) mount() http.Handler {
 	r.Get("/films/{filmID}", filmHandler.GetFilm)
 	r.Get("/films/{filmID}/actors", filmHandler.FetchFilmActors)
 	r.Get("/films/{filmID}/categories", filmHandler.FetchFilmCategories)
+	r.Get("/films/{filmID}/inventory", filmHandler.FetchFilmInventory)
 
 	actorServcice := actors.NewService(repo.New(app.db))
 	actorHandler := actors.NewHandler(actorServcice)
@@ -125,6 +126,7 @@ func (app *application) mount() http.Handler {
 	r.Put("/stores/{storeID}", storeHandler.UpdateStore)
 	r.Patch("/stores/{storeID}", storeHandler.UpdateStorePartial)
 	r.Delete("/stores/{storeID}", storeHandler.DeleteStore)
+	r.Get("/stores/{storeID}/inventory", storeHandler.FetchStoreInventory)
 
 	staffService := staffs.NewService(repo.New(app.db))
 	staffHandler := staffs.NewHandler(staffService)

@@ -13,6 +13,7 @@ type Service interface {
 	UpdateStore(ctx context.Context, arg repo.UpdateStoreParams) (repo.Store, error)
 	UpdateStorePartial(ctx context.Context, arg repo.UpdateStorePartialParams) (repo.Store, error)
 	DeleteStore(ctx context.Context, storeID int32) error
+	FetchStoreInventory(ctx context.Context, arg repo.FetchStoreInventoryParams) ([]repo.Inventory, error)
 }
 
 type svc struct {
@@ -55,4 +56,8 @@ func (s *svc) UpdateStorePartial(ctx context.Context, arg repo.UpdateStorePartia
 
 func (s *svc) DeleteStore(ctx context.Context, storeID int32) error {
 	return s.repo.DeleteStore(ctx, storeID)
+}
+
+func (s *svc) FetchStoreInventory(ctx context.Context, arg repo.FetchStoreInventoryParams) ([]repo.Inventory, error) {
+	return s.repo.FetchStoreInventory(ctx, arg)
 }

@@ -49,3 +49,14 @@ WHERE
 ORDER BY name ASC
 LIMIT $2
 OFFSET $3;
+
+-- name: FetchFilmInventory :many
+SELECT
+    inventory.*
+FROM
+    inventory
+WHERE
+    inventory.film_id = $1
+ORDER BY film_id ASC
+LIMIT $2
+OFFSET $3;

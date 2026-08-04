@@ -58,3 +58,14 @@ SET
     address_id = COALESCE(sqlc.narg('address_id'), address_id)
 WHERE store_id = sqlc.arg('store_id')
 RETURNING *;
+
+-- name: FetchStoreInventory :many
+SELECT
+    inventory.*
+FROM
+    inventory
+WHERE
+    inventory.store_id = $1
+ORDER BY store_id ASC
+LIMIT $2
+OFFSET $3;

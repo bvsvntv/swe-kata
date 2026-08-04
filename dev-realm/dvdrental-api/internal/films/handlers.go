@@ -152,3 +152,37 @@ func (h *handler) FetchFilmCategories(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, resp)
 }
+
+func (h *handler) FetchFilmInventory(w http.ResponseWriter, r *http.Request) {
+	filmID, err := utils.GetUrlID(r, "filmID")
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
+		return
+	}
+
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
+
+	offset := (page - 1) * limit
+
+	arg := repo.FetchFilmInventoryParams{
+		FilmID: int16(filmID),
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	}
+
+	inventory, err := h.service.FetchFilmInventory(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := FilmInventoryResponse{
+		Inventory: inventory,
+		MessageResponse: types.MessageResponse{
+			Message: "Inventory has been fetched successfully.",
+		},
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, resp)
+}

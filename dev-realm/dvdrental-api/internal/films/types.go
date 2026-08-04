@@ -25,3 +25,8 @@ type FilmCategoriesResponse struct {
 	types.MessageResponse
 	Categoryies []repo.Category `json:"categories"`
 }
+
+type FilmInventoryResponse struct {
+	types.MessageResponse
+	Inventory []repo.Inventory `json:"inventory"`
+}

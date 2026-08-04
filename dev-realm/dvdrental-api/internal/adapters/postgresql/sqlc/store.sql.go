@@ -70,6 +70,49 @@ func (q *Queries) DeleteStore(ctx context.Context, storeID int32) error {
 	return err
 }
 
+const fetchStoreInventory = `-- name: FetchStoreInventory :many
+SELECT
+    inventory.inventory_id, inventory.film_id, inventory.store_id, inventory.last_update
+FROM
+    inventory
+WHERE
+    inventory.store_id = $1
+ORDER BY store_id ASC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchStoreInventoryParams struct {
+	StoreID int16 `json:"store_id"`
+	Limit   int32 `json:"limit"`
+	Offset  int32 `json:"offset"`
+}
+
+func (q *Queries) FetchStoreInventory(ctx context.Context, arg FetchStoreInventoryParams) ([]Inventory, error) {
+	rows, err := q.db.Query(ctx, fetchStoreInventory, arg.StoreID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Inventory
+	for rows.Next() {
+		var i Inventory
+		if err := rows.Scan(
+			&i.InventoryID,
+			&i.FilmID,
+			&i.StoreID,
+			&i.LastUpdate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchStores = `-- name: FetchStores :many
 SELECT
     store_id, manager_staff_id, address_id, last_update

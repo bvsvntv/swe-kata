@@ -112,6 +112,49 @@ func (q *Queries) FetchFilmCategories(ctx context.Context, arg FetchFilmCategori
 	return items, nil
 }
 
+const fetchFilmInventory = `-- name: FetchFilmInventory :many
+SELECT
+    inventory.inventory_id, inventory.film_id, inventory.store_id, inventory.last_update
+FROM
+    inventory
+WHERE
+    inventory.film_id = $1
+ORDER BY film_id ASC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchFilmInventoryParams struct {
+	FilmID int16 `json:"film_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) FetchFilmInventory(ctx context.Context, arg FetchFilmInventoryParams) ([]Inventory, error) {
+	rows, err := q.db.Query(ctx, fetchFilmInventory, arg.FilmID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Inventory
+	for rows.Next() {
+		var i Inventory
+		if err := rows.Scan(
+			&i.InventoryID,
+			&i.FilmID,
+			&i.StoreID,
+			&i.LastUpdate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchFilms = `-- name: FetchFilms :many
 SELECT
     film_id, title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext

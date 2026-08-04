@@ -25,3 +25,8 @@ type UpdateStorePartialRequest struct {
 	ManagerStaffID *int16 `json:"manager_staff_id"`
 	AddressID      *int16 `json:"address_id"`
 }
+
+type StoreInventoryResponse struct {
+	types.MessageResponse
+	Inventory []repo.Inventory `json:"inventory"`
+}
