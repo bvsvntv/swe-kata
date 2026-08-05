@@ -18,6 +18,7 @@ type Querier interface {
 	CountFilms(ctx context.Context) (int64, error)
 	CountInventories(ctx context.Context) (int64, error)
 	CountLanguages(ctx context.Context) (int64, error)
+	CountPayments(ctx context.Context) (int64, error)
 	CountRentals(ctx context.Context) (int64, error)
 	CountStaffs(ctx context.Context) (int64, error)
 	CountStores(ctx context.Context) (int64, error)
@@ -28,6 +29,7 @@ type Querier interface {
 	CreateCountry(ctx context.Context, country string) (Country, error)
 	CreateCustomer(ctx context.Context, arg CreateCustomerParams) (Customer, error)
 	CreateInventory(ctx context.Context, arg CreateInventoryParams) (Inventory, error)
+	CreatePayment(ctx context.Context, arg CreatePaymentParams) (Payment, error)
 	CreateRental(ctx context.Context, arg CreateRentalParams) (Rental, error)
 	CreateStaff(ctx context.Context, arg CreateStaffParams) (Staff, error)
 	CreateStore(ctx context.Context, arg CreateStoreParams) (Store, error)
@@ -38,6 +40,7 @@ type Querier interface {
 	DeleteCountry(ctx context.Context, countryID int32) error
 	DeleteCustomer(ctx context.Context, customerID int32) error
 	DeleteInventory(ctx context.Context, inventoryID int32) error
+	DeletePayment(ctx context.Context, paymentID int32) error
 	DeleteRental(ctx context.Context, rentalID int32) error
 	DeleteStaff(ctx context.Context, staffID int32) error
 	DeleteStore(ctx context.Context, storeID int32) error
@@ -58,6 +61,7 @@ type Querier interface {
 	FetchInventories(ctx context.Context, arg FetchInventoriesParams) ([]Inventory, error)
 	FetchInventoryRentals(ctx context.Context, arg FetchInventoryRentalsParams) ([]Rental, error)
 	FetchLanguages(ctx context.Context, arg FetchLanguagesParams) ([]Language, error)
+	FetchPayments(ctx context.Context, arg FetchPaymentsParams) ([]Payment, error)
 	FetchRentals(ctx context.Context, arg FetchRentalsParams) ([]Rental, error)
 	FetchStaffRentals(ctx context.Context, arg FetchStaffRentalsParams) ([]Rental, error)
 	FetchStaffs(ctx context.Context, arg FetchStaffsParams) ([]Staff, error)
@@ -73,6 +77,7 @@ type Querier interface {
 	GetFilm(ctx context.Context, filmID int32) (Film, error)
 	GetInventory(ctx context.Context, inventoryID int32) (Inventory, error)
 	GetLanguage(ctx context.Context, languageID int32) (Language, error)
+	GetPayment(ctx context.Context, paymentID int32) (Payment, error)
 	GetRental(ctx context.Context, rentalID int32) (Rental, error)
 	GetStaff(ctx context.Context, staffID int32) (Staff, error)
 	GetStore(ctx context.Context, storeID int32) (Store, error)
@@ -88,6 +93,7 @@ type Querier interface {
 	UpdateCountry(ctx context.Context, arg UpdateCountryParams) (Country, error)
 	UpdateCustomer(ctx context.Context, arg UpdateCustomerParams) (Customer, error)
 	UpdateCustomerPartial(ctx context.Context, arg UpdateCustomerPartialParams) (Customer, error)
+	UpdatePayment(ctx context.Context, arg UpdatePaymentParams) (Payment, error)
 	UpdateRental(ctx context.Context, arg UpdateRentalParams) (Rental, error)
 	UpdateStaff(ctx context.Context, arg UpdateStaffParams) (Staff, error)
 	UpdateStaffPartial(ctx context.Context, arg UpdateStaffPartialParams) (Staff, error)

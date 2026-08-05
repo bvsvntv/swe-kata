@@ -15,6 +15,7 @@ import (
 	"dvdrental-api/internal/films"
 	"dvdrental-api/internal/inventory"
 	"dvdrental-api/internal/languages"
+	"dvdrental-api/internal/payments"
 	"dvdrental-api/internal/rentals"
 	"dvdrental-api/internal/staffs"
 	"dvdrental-api/internal/stores"
@@ -167,6 +168,14 @@ func (app *application) mount() http.Handler {
 	r.Put("/rentals/{rentalID}", rentalHandler.UpdateRental)
 	r.Delete("/rentals/{rentalID}", rentalHandler.DeleteRental)
 	r.Post("/rentals/{rentalID}/return", rentalHandler.ReturnRental)
+
+	paymentService := payments.NewService(repo.New(app.db))
+	paymentHandler := payments.NewHandler(paymentService)
+	r.Get("/payments", paymentHandler.FetchPayments)
+	r.Get("/payments/{paymentID}", paymentHandler.GetPayment)
+	r.Post("/payments", paymentHandler.CreatePayment)
+	r.Put("/payments/{paymentID}", paymentHandler.UpdatePayment)
+	r.Delete("/payments/{paymentID}", paymentHandler.DeletePayment)
 
 	return r
 }
