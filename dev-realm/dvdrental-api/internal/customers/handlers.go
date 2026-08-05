@@ -244,3 +244,37 @@ func (h *handler) FetchCustomerRentals(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, resp)
 }
+
+func (h *handler) FetchCustomerPayments(w http.ResponseWriter, r *http.Request) {
+	customerID, err := utils.GetUrlID(r, "customerID")
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
+		return
+	}
+
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
+
+	offset := (page - 1) * limit
+
+	arg := repo.FetchCustomerPaymentsParams{
+		CustomerID: int16(customerID),
+		Limit:      int32(limit),
+		Offset:     int32(offset),
+	}
+
+	payments, err := h.service.FetchCustomerPayments(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := CustomerPaymentsResponse{
+		Payments: payments,
+		MessageResponse: types.MessageResponse{
+			Message: "Payments has been fetched successfully.",
+		},
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, resp)
+}

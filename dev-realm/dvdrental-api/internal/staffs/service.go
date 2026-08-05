@@ -14,6 +14,7 @@ type Service interface {
 	UpdateStaff(ctx context.Context, arg repo.UpdateStaffParams) (repo.Staff, error)
 	UpdateStaffPartial(ctx context.Context, arg repo.UpdateStaffPartialParams) (repo.Staff, error)
 	FetchStaffRentals(ctx context.Context, arg repo.FetchStaffRentalsParams) ([]repo.Rental, error)
+	FetchStaffPayments(ctx context.Context, arg repo.FetchStaffPaymentsParams) ([]repo.Payment, error)
 }
 
 type svc struct {
@@ -62,4 +63,8 @@ func (s *svc) UpdateStaffPartial(ctx context.Context, arg repo.UpdateStaffPartia
 
 func (s *svc) FetchStaffRentals(ctx context.Context, arg repo.FetchStaffRentalsParams) ([]repo.Rental, error) {
 	return s.repo.FetchStaffRentals(ctx, arg)
+}
+
+func (s *svc) FetchStaffPayments(ctx context.Context, arg repo.FetchStaffPaymentsParams) ([]repo.Payment, error) {
+	return s.repo.FetchStaffPayments(ctx, arg)
 }

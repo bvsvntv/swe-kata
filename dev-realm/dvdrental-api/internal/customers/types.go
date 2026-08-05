@@ -38,3 +38,8 @@ type CustomerRentalsResponse struct {
 	types.MessageResponse
 	Rentals []repo.Rental `json:"rentals"`
 }
+
+type CustomerPaymentsResponse struct {
+	types.MessageResponse
+	Payments []repo.Payment `json:"payments"`
+}

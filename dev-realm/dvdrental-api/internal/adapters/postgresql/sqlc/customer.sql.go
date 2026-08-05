@@ -96,6 +96,51 @@ func (q *Queries) DeleteCustomer(ctx context.Context, customerID int32) error {
 	return err
 }
 
+const fetchCustomerPayments = `-- name: FetchCustomerPayments :many
+SELECT
+    payment.payment_id, payment.customer_id, payment.staff_id, payment.rental_id, payment.amount, payment.payment_date
+FROM
+    payment
+WHERE
+    payment.customer_id = $1
+ORDER BY payment_date DESC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchCustomerPaymentsParams struct {
+	CustomerID int16 `json:"customer_id"`
+	Limit      int32 `json:"limit"`
+	Offset     int32 `json:"offset"`
+}
+
+func (q *Queries) FetchCustomerPayments(ctx context.Context, arg FetchCustomerPaymentsParams) ([]Payment, error) {
+	rows, err := q.db.Query(ctx, fetchCustomerPayments, arg.CustomerID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Payment
+	for rows.Next() {
+		var i Payment
+		if err := rows.Scan(
+			&i.PaymentID,
+			&i.CustomerID,
+			&i.StaffID,
+			&i.RentalID,
+			&i.Amount,
+			&i.PaymentDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchCustomerRentals = `-- name: FetchCustomerRentals :many
 SELECT
     rental.rental_id, rental.rental_date, rental.inventory_id, rental.customer_id, rental.return_date, rental.staff_id, rental.last_update

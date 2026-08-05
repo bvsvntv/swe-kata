@@ -250,3 +250,37 @@ func (h *handler) FetchStaffRentals(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, resp)
 }
+
+func (h *handler) FetchStaffPayments(w http.ResponseWriter, r *http.Request) {
+	staffID, err := utils.GetUrlID(r, "staffID")
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
+		return
+	}
+
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
+
+	offset := (page - 1) * limit
+
+	arg := repo.FetchStaffPaymentsParams{
+		StaffID: int16(staffID),
+		Limit:   int32(limit),
+		Offset:  int32(offset),
+	}
+
+	payments, err := h.service.FetchStaffPayments(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := StaffPaymentsResponse{
+		Payments: payments,
+		MessageResponse: types.MessageResponse{
+			Message: "Payments has been fetched successfully.",
+		},
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, resp)
+}

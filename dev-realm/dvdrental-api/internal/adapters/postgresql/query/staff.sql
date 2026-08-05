@@ -90,3 +90,14 @@ WHERE
 ORDER BY rental_date DESC
 LIMIT $2
 OFFSET $3;
+
+-- name: FetchStaffPayments :many
+SELECT
+    payment.*
+FROM
+    payment
+WHERE
+    payment.staff_id = $1
+ORDER BY payment_date DESC
+LIMIT $2
+OFFSET $3;

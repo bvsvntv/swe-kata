@@ -141,6 +141,7 @@ func (app *application) mount() http.Handler {
 	r.Patch("/staffs/{staffID}", staffHandler.UpdateStaffPartial)
 	r.Delete("/staffs/{staffID}", staffHandler.DeleteStaff)
 	r.Get("/staffs/{staffID}/rentals", staffHandler.FetchStaffRentals)
+	r.Get("/staffs/{staffID}/payments", staffHandler.FetchStaffPayments)
 
 	inventoryService := inventory.NewService(repo.New(app.db))
 	inventoryHandler := inventory.NewHandler(inventoryService)
@@ -159,6 +160,7 @@ func (app *application) mount() http.Handler {
 	r.Patch("/customers/{customerID}", customerHandler.UpdateCustomerPartial)
 	r.Delete("/customers/{customerID}", customerHandler.DeleteCustomer)
 	r.Get("/customers/{customerID}/rentals", customerHandler.FetchCustomerRentals)
+	r.Get("/customers/{customerID}/payments", customerHandler.FetchCustomerPayments)
 
 	rentalService := rentals.NewService(repo.New(app.db))
 	rentalHandler := rentals.NewHandler(rentalService)

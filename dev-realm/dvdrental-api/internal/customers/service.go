@@ -14,6 +14,7 @@ type Service interface {
 	UpdateCustomerPartial(ctx context.Context, arg repo.UpdateCustomerPartialParams) (repo.Customer, error)
 	DeleteCustomer(ctx context.Context, customerID int32) error
 	FetchCustomerRentals(ctx context.Context, arg repo.FetchCustomerRentalsParams) ([]repo.Rental, error)
+	FetchCustomerPayments(ctx context.Context, arg repo.FetchCustomerPaymentsParams) ([]repo.Payment, error)
 }
 
 type svc struct {
@@ -62,4 +63,8 @@ func (s *svc) DeleteCustomer(ctx context.Context, customerID int32) error {
 
 func (s *svc) FetchCustomerRentals(ctx context.Context, arg repo.FetchCustomerRentalsParams) ([]repo.Rental, error) {
 	return s.repo.FetchCustomerRentals(ctx, arg)
+}
+
+func (s *svc) FetchCustomerPayments(ctx context.Context, arg repo.FetchCustomerPaymentsParams) ([]repo.Payment, error) {
+	return s.repo.FetchCustomerPayments(ctx, arg)
 }

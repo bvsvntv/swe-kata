@@ -44,3 +44,8 @@ type StaffRentalsResponse struct {
 	types.MessageResponse
 	Rentals []repo.Rental `json:"rentals"`
 }
+
+type StaffPaymentsResponse struct {
+	types.MessageResponse
+	Payments []repo.Payment `json:"payments"`
+}
