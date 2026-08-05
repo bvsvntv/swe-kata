@@ -40,3 +40,14 @@ RETURNING *;
 DELETE FROM 
     inventory
 WHERE inventory_id = $1;
+
+-- name: FetchInventoryRentals :many
+SELECT
+    rental.*
+FROM
+    rental
+WHERE
+    rental.inventory_id = $1
+ORDER BY rental_date DESC
+LIMIT $2
+OFFSET $3;

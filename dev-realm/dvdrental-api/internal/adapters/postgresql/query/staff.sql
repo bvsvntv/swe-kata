@@ -79,3 +79,14 @@ RETURNING *;
 DELETE FROM
     staff
 WHERE staff_id = $1;
+
+-- name: FetchStaffRentals :many
+SELECT
+    rental.*
+FROM
+    rental
+WHERE
+    rental.staff_id = $1
+ORDER BY rental_date DESC
+LIMIT $2
+OFFSET $3;

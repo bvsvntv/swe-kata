@@ -99,6 +99,52 @@ func (q *Queries) DeleteStaff(ctx context.Context, staffID int32) error {
 	return err
 }
 
+const fetchStaffRentals = `-- name: FetchStaffRentals :many
+SELECT
+    rental.rental_id, rental.rental_date, rental.inventory_id, rental.customer_id, rental.return_date, rental.staff_id, rental.last_update
+FROM
+    rental
+WHERE
+    rental.staff_id = $1
+ORDER BY rental_date DESC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchStaffRentalsParams struct {
+	StaffID int16 `json:"staff_id"`
+	Limit   int32 `json:"limit"`
+	Offset  int32 `json:"offset"`
+}
+
+func (q *Queries) FetchStaffRentals(ctx context.Context, arg FetchStaffRentalsParams) ([]Rental, error) {
+	rows, err := q.db.Query(ctx, fetchStaffRentals, arg.StaffID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Rental
+	for rows.Next() {
+		var i Rental
+		if err := rows.Scan(
+			&i.RentalID,
+			&i.RentalDate,
+			&i.InventoryID,
+			&i.CustomerID,
+			&i.ReturnDate,
+			&i.StaffID,
+			&i.LastUpdate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchStaffs = `-- name: FetchStaffs :many
 SELECT
     staff_id, first_name, last_name, address_id, email, store_id, active, username, password, last_update, picture

@@ -86,3 +86,14 @@ DELETE FROM
     customer
 WHERE
     customer_id = $1;
+
+-- name: FetchCustomerRentals :many
+SELECT
+    rental.*
+FROM
+    rental
+WHERE
+    rental.customer_id = $1
+ORDER BY rental_date DESC
+LIMIT $2
+OFFSET $3;

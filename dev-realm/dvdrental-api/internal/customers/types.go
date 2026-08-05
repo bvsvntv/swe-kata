@@ -33,3 +33,8 @@ type UpdateCustomerPartialRequest struct {
 	AddressID *int16  `json:"address_id,omitempty"`
 	StoreID   *int16  `json:"store_id,omitempty"`
 }
+
+type CustomerRentalsResponse struct {
+	types.MessageResponse
+	Rentals []repo.Rental `json:"rentals"`
+}

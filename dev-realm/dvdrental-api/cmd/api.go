@@ -139,6 +139,7 @@ func (app *application) mount() http.Handler {
 	r.Put("/staffs/{staffID}", staffHandler.UpdateStaff)
 	r.Patch("/staffs/{staffID}", staffHandler.UpdateStaffPartial)
 	r.Delete("/staffs/{staffID}", staffHandler.DeleteStaff)
+	r.Get("/staffs/{staffID}/rentals", staffHandler.FetchStaffRentals)
 
 	inventoryService := inventory.NewService(repo.New(app.db))
 	inventoryHandler := inventory.NewHandler(inventoryService)
@@ -146,6 +147,7 @@ func (app *application) mount() http.Handler {
 	r.Get("/inventory/{inventoryID}", inventoryHandler.GetInventory)
 	r.Post("/inventory", inventoryHandler.CreateInventory)
 	r.Delete("/inventory/{inventoryID}", inventoryHandler.DeleteInventory)
+	r.Get("/inventory/{inventoryID}/rentals", inventoryHandler.FetchInventoryRentals)
 
 	customerService := customers.NewService(repo.New(app.db))
 	customerHandler := customers.NewHandler(customerService)
@@ -155,6 +157,7 @@ func (app *application) mount() http.Handler {
 	r.Put("/customers/{customerID}", customerHandler.UpdateCustomer)
 	r.Patch("/customers/{customerID}", customerHandler.UpdateCustomerPartial)
 	r.Delete("/customers/{customerID}", customerHandler.DeleteCustomer)
+	r.Get("/customers/{customerID}/rentals", customerHandler.FetchCustomerRentals)
 
 	rentalService := rentals.NewService(repo.New(app.db))
 	rentalHandler := rentals.NewHandler(rentalService)

@@ -216,3 +216,37 @@ func (h *handler) UpdateStaffPartial(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 }
+
+func (h *handler) FetchStaffRentals(w http.ResponseWriter, r *http.Request) {
+	staffID, err := utils.GetUrlID(r, "staffID")
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
+		return
+	}
+
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
+
+	offset := (page - 1) * limit
+
+	arg := repo.FetchStaffRentalsParams{
+		StaffID: int16(staffID),
+		Limit:   int32(limit),
+		Offset:  int32(offset),
+	}
+
+	rentals, err := h.service.FetchStaffRentals(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := StaffRentalsResponse{
+		Rentals: rentals,
+		MessageResponse: types.MessageResponse{
+			Message: "Rentals has been fetched successfully.",
+		},
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, resp)
+}

@@ -13,6 +13,7 @@ type Service interface {
 	DeleteStaff(ctx context.Context, staffID int32) error
 	UpdateStaff(ctx context.Context, arg repo.UpdateStaffParams) (repo.Staff, error)
 	UpdateStaffPartial(ctx context.Context, arg repo.UpdateStaffPartialParams) (repo.Staff, error)
+	FetchStaffRentals(ctx context.Context, arg repo.FetchStaffRentalsParams) ([]repo.Rental, error)
 }
 
 type svc struct {
@@ -57,4 +58,8 @@ func (s *svc) UpdateStaff(ctx context.Context, arg repo.UpdateStaffParams) (repo
 
 func (s *svc) UpdateStaffPartial(ctx context.Context, arg repo.UpdateStaffPartialParams) (repo.Staff, error) {
 	return s.repo.UpdateStaffPartial(ctx, arg)
+}
+
+func (s *svc) FetchStaffRentals(ctx context.Context, arg repo.FetchStaffRentalsParams) ([]repo.Rental, error) {
+	return s.repo.FetchStaffRentals(ctx, arg)
 }

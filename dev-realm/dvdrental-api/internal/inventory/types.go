@@ -20,3 +20,8 @@ type InventoryRequest struct {
 	FilmID  int16 `json:"film_id"`
 	StoreID int16 `json:"store_id"`
 }
+
+type InventoryRentalsResponse struct {
+	types.MessageResponse
+	Rentals []repo.Rental `json:"rentals"`
+}

@@ -11,6 +11,7 @@ type Service interface {
 	GetInventory(ctx context.Context, inventoryID int32) (repo.Inventory, error)
 	CreateInventory(ctx context.Context, arg repo.CreateInventoryParams) (repo.Inventory, error)
 	DeleteInventory(ctx context.Context, inventoryID int32) error
+	FetchInventoryRentals(ctx context.Context, arg repo.FetchInventoryRentalsParams) ([]repo.Rental, error)
 }
 
 type svc struct {
@@ -47,4 +48,8 @@ func (s *svc) CreateInventory(ctx context.Context, arg repo.CreateInventoryParam
 
 func (s *svc) DeleteInventory(ctx context.Context, inventoryID int32) error {
 	return s.repo.DeleteInventory(ctx, inventoryID)
+}
+
+func (s *svc) FetchInventoryRentals(ctx context.Context, arg repo.FetchInventoryRentalsParams) ([]repo.Rental, error) {
+	return s.repo.FetchInventoryRentals(ctx, arg)
 }

@@ -107,6 +107,52 @@ func (q *Queries) FetchInventories(ctx context.Context, arg FetchInventoriesPara
 	return items, nil
 }
 
+const fetchInventoryRentals = `-- name: FetchInventoryRentals :many
+SELECT
+    rental.rental_id, rental.rental_date, rental.inventory_id, rental.customer_id, rental.return_date, rental.staff_id, rental.last_update
+FROM
+    rental
+WHERE
+    rental.inventory_id = $1
+ORDER BY rental_date DESC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchInventoryRentalsParams struct {
+	InventoryID int32 `json:"inventory_id"`
+	Limit       int32 `json:"limit"`
+	Offset      int32 `json:"offset"`
+}
+
+func (q *Queries) FetchInventoryRentals(ctx context.Context, arg FetchInventoryRentalsParams) ([]Rental, error) {
+	rows, err := q.db.Query(ctx, fetchInventoryRentals, arg.InventoryID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Rental
+	for rows.Next() {
+		var i Rental
+		if err := rows.Scan(
+			&i.RentalID,
+			&i.RentalDate,
+			&i.InventoryID,
+			&i.CustomerID,
+			&i.ReturnDate,
+			&i.StaffID,
+			&i.LastUpdate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getInventory = `-- name: GetInventory :one
 SELECT
     inventory_id, film_id, store_id, last_update
