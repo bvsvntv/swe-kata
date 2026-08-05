@@ -54,6 +54,7 @@ type Querier interface {
 	FetchInventories(ctx context.Context, arg FetchInventoriesParams) ([]Inventory, error)
 	FetchLanguages(ctx context.Context, arg FetchLanguagesParams) ([]Language, error)
 	FetchStaffs(ctx context.Context, arg FetchStaffsParams) ([]Staff, error)
+	FetchStoreCustomers(ctx context.Context, arg FetchStoreCustomersParams) ([]Customer, error)
 	FetchStoreInventory(ctx context.Context, arg FetchStoreInventoryParams) ([]Inventory, error)
 	FetchStores(ctx context.Context, arg FetchStoresParams) ([]Store, error)
 	GetActor(ctx context.Context, actorID int32) (Actor, error)

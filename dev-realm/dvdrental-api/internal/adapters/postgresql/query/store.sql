@@ -69,3 +69,14 @@ WHERE
 ORDER BY store_id ASC
 LIMIT $2
 OFFSET $3;
+
+-- name: FetchStoreCustomers :many
+SELECT
+    customer.*
+FROM
+    customer
+WHERE
+    customer.store_id = $1
+ORDER BY store_id ASC
+LIMIT $2
+OFFSET $3;

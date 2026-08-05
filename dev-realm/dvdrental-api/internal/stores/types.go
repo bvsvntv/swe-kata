@@ -30,3 +30,8 @@ type StoreInventoryResponse struct {
 	types.MessageResponse
 	Inventory []repo.Inventory `json:"inventory"`
 }
+
+type StoreCustomersResponse struct {
+	types.MessageResponse
+	Customers []repo.Customer `json:"customers"`
+}

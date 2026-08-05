@@ -229,3 +229,37 @@ func (h *handler) FetchStoreInventory(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, resp)
 }
+
+func (h *handler) FetchStoreCustomers(w http.ResponseWriter, r *http.Request) {
+	storeID, err := utils.GetUrlID(r, "storeID")
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse id: %v", err))
+		return
+	}
+
+	page := utils.GetQueryInt(r, "page", 1)
+	limit := utils.GetQueryInt(r, "limit", 10)
+
+	offset := (page - 1) * limit
+
+	arg := repo.FetchStoreCustomersParams{
+		StoreID: int16(storeID),
+		Limit:   int32(limit),
+		Offset:  int32(offset),
+	}
+
+	customers, err := h.service.FetchStoreCustomers(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp := StoreCustomersResponse{
+		Customers: customers,
+		MessageResponse: types.MessageResponse{
+			Message: "Customers has been fetched successfully.",
+		},
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, resp)
+}

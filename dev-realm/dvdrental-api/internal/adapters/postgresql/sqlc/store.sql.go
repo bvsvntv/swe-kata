@@ -70,6 +70,55 @@ func (q *Queries) DeleteStore(ctx context.Context, storeID int32) error {
 	return err
 }
 
+const fetchStoreCustomers = `-- name: FetchStoreCustomers :many
+SELECT
+    customer.customer_id, customer.store_id, customer.first_name, customer.last_name, customer.email, customer.address_id, customer.activebool, customer.create_date, customer.last_update, customer.active
+FROM
+    customer
+WHERE
+    customer.store_id = $1
+ORDER BY store_id ASC
+LIMIT $2
+OFFSET $3
+`
+
+type FetchStoreCustomersParams struct {
+	StoreID int16 `json:"store_id"`
+	Limit   int32 `json:"limit"`
+	Offset  int32 `json:"offset"`
+}
+
+func (q *Queries) FetchStoreCustomers(ctx context.Context, arg FetchStoreCustomersParams) ([]Customer, error) {
+	rows, err := q.db.Query(ctx, fetchStoreCustomers, arg.StoreID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Customer
+	for rows.Next() {
+		var i Customer
+		if err := rows.Scan(
+			&i.CustomerID,
+			&i.StoreID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.AddressID,
+			&i.Activebool,
+			&i.CreateDate,
+			&i.LastUpdate,
+			&i.Active,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchStoreInventory = `-- name: FetchStoreInventory :many
 SELECT
     inventory.inventory_id, inventory.film_id, inventory.store_id, inventory.last_update

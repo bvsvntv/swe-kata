@@ -128,6 +128,7 @@ func (app *application) mount() http.Handler {
 	r.Patch("/stores/{storeID}", storeHandler.UpdateStorePartial)
 	r.Delete("/stores/{storeID}", storeHandler.DeleteStore)
 	r.Get("/stores/{storeID}/inventory", storeHandler.FetchStoreInventory)
+	r.Get("/stores/{storeID}/customers", storeHandler.FetchStoreCustomers)
 
 	staffService := staffs.NewService(repo.New(app.db))
 	staffHandler := staffs.NewHandler(staffService)
