@@ -186,3 +186,98 @@ func (h *handler) FetchFilmInventory(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespondWithJSON(w, http.StatusOK, resp)
 }
+
+func (h *handler) CreateFilm(w http.ResponseWriter, r *http.Request) {
+	req := FilmRequest{}
+
+	if err := utils.DecodeJSON(r, &req); err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
+		return
+	}
+
+	arg := repo.CreateFilmParams{
+		Title:           req.Title,
+		Description:     utils.ToText(&req.Description),
+		ReleaseYear:     req.ReleaseYear,
+		LanguageID:      req.LanguageID,
+		RentalDuration:  req.RentalDuration,
+		RentalRate:      utils.ToNumeric(&req.RentalRate),
+		Length:          utils.ToInt2(&req.Length),
+		ReplacementCost: utils.ToNumeric(&req.ReplacementCost),
+		Rating:          repo.NullMpaaRating{MpaaRating: repo.MpaaRating(req.Rating), Valid: req.Rating != ""},
+		SpecialFeatures: req.SpecialFeatures,
+	}
+
+	film, err := h.service.CreateFilm(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to create film.\nERROR: %v", err))
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusCreated, FilmResponse{
+		Film: film,
+		MessageResponse: types.MessageResponse{
+			Message: "Film has been created successfully.",
+		},
+	})
+}
+
+func (h *handler) UpdateFilm(w http.ResponseWriter, r *http.Request) {
+	filmID, err := utils.GetUrlID(r, "filmID")
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse film id: %v", err))
+		return
+	}
+
+	req := FilmRequest{}
+	if err := utils.DecodeJSON(r, &req); err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error parsing JSON.\nERROR: %v", err))
+		return
+	}
+
+	arg := repo.UpdateFilmParams{
+		FilmID:          filmID,
+		Title:           req.Title,
+		Description:     utils.ToText(&req.Description),
+		ReleaseYear:     req.ReleaseYear,
+		LanguageID:      req.LanguageID,
+		RentalDuration:  req.RentalDuration,
+		RentalRate:      utils.ToNumeric(&req.RentalRate),
+		Length:          utils.ToInt2(&req.Length),
+		ReplacementCost: utils.ToNumeric(&req.ReplacementCost),
+		Rating:          repo.NullMpaaRating{MpaaRating: repo.MpaaRating(req.Rating), Valid: req.Rating != ""},
+		SpecialFeatures: req.SpecialFeatures,
+	}
+
+	film, err := h.service.UpdateFilm(r.Context(), arg)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to update film.\nERROR: %v", err))
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, FilmResponse{
+		Film: film,
+		MessageResponse: types.MessageResponse{
+			Message: "Film has been updated successfully.",
+		},
+	})
+}
+
+func (h *handler) DeleteFilm(w http.ResponseWriter, r *http.Request) {
+	filmID, err := utils.GetUrlID(r, "filmID")
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Failed to parse film id: %v", err))
+		return
+	}
+
+	err = h.service.DeleteFilm(r.Context(), filmID)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, "Failed to delete film.")
+		fmt.Println(err.Error())
+		return
+	}
+
+	utils.RespondWithJSON(w, http.StatusOK, types.MessageResponse{
+		Message: "Film has been deleted successfully.",
+	})
+}

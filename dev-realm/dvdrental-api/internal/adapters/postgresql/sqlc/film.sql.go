@@ -7,6 +7,8 @@ package repo
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countFilms = `-- name: CountFilms :one
@@ -21,6 +23,80 @@ func (q *Queries) CountFilms(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const createFilm = `-- name: CreateFilm :one
+INSERT INTO film (
+    title,
+    description,
+    release_year,
+    language_id,
+    rental_duration,
+    rental_rate,
+    length,
+    replacement_cost,
+    rating,
+    special_features
+) VALUES (
+    $1, $2, $3, $4, $5,
+    $6, $7, $8, $9, $10
+)
+RETURNING film_id, title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext
+`
+
+type CreateFilmParams struct {
+	Title           string         `json:"title"`
+	Description     pgtype.Text    `json:"description"`
+	ReleaseYear     interface{}    `json:"release_year"`
+	LanguageID      int16          `json:"language_id"`
+	RentalDuration  int16          `json:"rental_duration"`
+	RentalRate      pgtype.Numeric `json:"rental_rate"`
+	Length          pgtype.Int2    `json:"length"`
+	ReplacementCost pgtype.Numeric `json:"replacement_cost"`
+	Rating          NullMpaaRating `json:"rating"`
+	SpecialFeatures []string       `json:"special_features"`
+}
+
+func (q *Queries) CreateFilm(ctx context.Context, arg CreateFilmParams) (Film, error) {
+	row := q.db.QueryRow(ctx, createFilm,
+		arg.Title,
+		arg.Description,
+		arg.ReleaseYear,
+		arg.LanguageID,
+		arg.RentalDuration,
+		arg.RentalRate,
+		arg.Length,
+		arg.ReplacementCost,
+		arg.Rating,
+		arg.SpecialFeatures,
+	)
+	var i Film
+	err := row.Scan(
+		&i.FilmID,
+		&i.Title,
+		&i.Description,
+		&i.ReleaseYear,
+		&i.LanguageID,
+		&i.RentalDuration,
+		&i.RentalRate,
+		&i.Length,
+		&i.ReplacementCost,
+		&i.Rating,
+		&i.LastUpdate,
+		&i.SpecialFeatures,
+		&i.Fulltext,
+	)
+	return i, err
+}
+
+const deleteFilm = `-- name: DeleteFilm :exec
+DELETE FROM film
+WHERE film_id = $1
+`
+
+func (q *Queries) DeleteFilm(ctx context.Context, filmID int32) error {
+	_, err := q.db.Exec(ctx, deleteFilm, filmID)
+	return err
 }
 
 const fetchFilmActors = `-- name: FetchFilmActors :many
@@ -215,6 +291,71 @@ LIMIT 1
 
 func (q *Queries) GetFilm(ctx context.Context, filmID int32) (Film, error) {
 	row := q.db.QueryRow(ctx, getFilm, filmID)
+	var i Film
+	err := row.Scan(
+		&i.FilmID,
+		&i.Title,
+		&i.Description,
+		&i.ReleaseYear,
+		&i.LanguageID,
+		&i.RentalDuration,
+		&i.RentalRate,
+		&i.Length,
+		&i.ReplacementCost,
+		&i.Rating,
+		&i.LastUpdate,
+		&i.SpecialFeatures,
+		&i.Fulltext,
+	)
+	return i, err
+}
+
+const updateFilm = `-- name: UpdateFilm :one
+UPDATE film
+SET
+    title = $2,
+    description = $3,
+    release_year = $4,
+    language_id = $5,
+    rental_duration = $6,
+    rental_rate = $7,
+    length = $8,
+    replacement_cost = $9,
+    rating = $10,
+    special_features = $11,
+    last_update = NOW()
+WHERE film_id = $1
+RETURNING film_id, title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext
+`
+
+type UpdateFilmParams struct {
+	FilmID          int32          `json:"film_id"`
+	Title           string         `json:"title"`
+	Description     pgtype.Text    `json:"description"`
+	ReleaseYear     interface{}    `json:"release_year"`
+	LanguageID      int16          `json:"language_id"`
+	RentalDuration  int16          `json:"rental_duration"`
+	RentalRate      pgtype.Numeric `json:"rental_rate"`
+	Length          pgtype.Int2    `json:"length"`
+	ReplacementCost pgtype.Numeric `json:"replacement_cost"`
+	Rating          NullMpaaRating `json:"rating"`
+	SpecialFeatures []string       `json:"special_features"`
+}
+
+func (q *Queries) UpdateFilm(ctx context.Context, arg UpdateFilmParams) (Film, error) {
+	row := q.db.QueryRow(ctx, updateFilm,
+		arg.FilmID,
+		arg.Title,
+		arg.Description,
+		arg.ReleaseYear,
+		arg.LanguageID,
+		arg.RentalDuration,
+		arg.RentalRate,
+		arg.Length,
+		arg.ReplacementCost,
+		arg.Rating,
+		arg.SpecialFeatures,
+	)
 	var i Film
 	err := row.Scan(
 		&i.FilmID,

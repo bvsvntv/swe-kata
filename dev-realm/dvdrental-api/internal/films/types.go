@@ -30,3 +30,16 @@ type FilmInventoryResponse struct {
 	types.MessageResponse
 	Inventory []repo.Inventory `json:"inventory"`
 }
+
+type FilmRequest struct {
+	Title           string   `json:"title"`
+	Description     string   `json:"description"`
+	ReleaseYear     int32    `json:"release_year"`
+	LanguageID      int16    `json:"language_id"`
+	RentalDuration  int16    `json:"rental_duration"`
+	RentalRate      float64  `json:"rental_rate"`
+	Length          int16    `json:"length"`
+	ReplacementCost float64  `json:"replacement_cost"`
+	Rating          string   `json:"rating"`
+	SpecialFeatures []string `json:"special_features"`
+}

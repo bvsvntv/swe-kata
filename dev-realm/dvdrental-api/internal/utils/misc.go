@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -44,4 +45,14 @@ func ToTimestamp(t *time.Time) pgtype.Timestamp {
 		Time:  *t,
 		Valid: true,
 	}
+}
+
+func ToNumeric(v *float64) pgtype.Numeric {
+	if v == nil {
+		return pgtype.Numeric{}
+	}
+	var num pgtype.Numeric
+	str := fmt.Sprintf("%f", *v)
+	num.Scan(str)
+	return num
 }

@@ -28,6 +28,7 @@ type Querier interface {
 	CreateCity(ctx context.Context, arg CreateCityParams) (City, error)
 	CreateCountry(ctx context.Context, country string) (Country, error)
 	CreateCustomer(ctx context.Context, arg CreateCustomerParams) (Customer, error)
+	CreateFilm(ctx context.Context, arg CreateFilmParams) (Film, error)
 	CreateInventory(ctx context.Context, arg CreateInventoryParams) (Inventory, error)
 	CreatePayment(ctx context.Context, arg CreatePaymentParams) (Payment, error)
 	CreateRental(ctx context.Context, arg CreateRentalParams) (Rental, error)
@@ -39,6 +40,7 @@ type Querier interface {
 	DeleteCity(ctx context.Context, cityID int32) error
 	DeleteCountry(ctx context.Context, countryID int32) error
 	DeleteCustomer(ctx context.Context, customerID int32) error
+	DeleteFilm(ctx context.Context, filmID int32) error
 	DeleteInventory(ctx context.Context, inventoryID int32) error
 	DeletePayment(ctx context.Context, paymentID int32) error
 	DeleteRental(ctx context.Context, rentalID int32) error
@@ -95,6 +97,7 @@ type Querier interface {
 	UpdateCountry(ctx context.Context, arg UpdateCountryParams) (Country, error)
 	UpdateCustomer(ctx context.Context, arg UpdateCustomerParams) (Customer, error)
 	UpdateCustomerPartial(ctx context.Context, arg UpdateCustomerPartialParams) (Customer, error)
+	UpdateFilm(ctx context.Context, arg UpdateFilmParams) (Film, error)
 	UpdatePayment(ctx context.Context, arg UpdatePaymentParams) (Payment, error)
 	UpdateRental(ctx context.Context, arg UpdateRentalParams) (Rental, error)
 	UpdateStaff(ctx context.Context, arg UpdateStaffParams) (Staff, error)

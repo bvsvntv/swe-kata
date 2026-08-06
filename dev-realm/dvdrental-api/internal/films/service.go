@@ -12,6 +12,9 @@ type Service interface {
 	FetchFilmActors(ctx context.Context, arg repo.FetchFilmActorsParams) ([]repo.Actor, error)
 	FetchFilmCategories(ctx context.Context, arg repo.FetchFilmCategoriesParams) ([]repo.Category, error)
 	FetchFilmInventory(ctx context.Context, arg repo.FetchFilmInventoryParams) ([]repo.Inventory, error)
+	CreateFilm(ctx context.Context, arg repo.CreateFilmParams) (repo.Film, error)
+	UpdateFilm(ctx context.Context, arg repo.UpdateFilmParams) (repo.Film, error)
+	DeleteFilm(ctx context.Context, filmID int32) error
 }
 
 type svc struct {
@@ -51,4 +54,16 @@ func (s *svc) FetchFilmCategories(ctx context.Context, arg repo.FetchFilmCategor
 
 func (s *svc) FetchFilmInventory(ctx context.Context, arg repo.FetchFilmInventoryParams) ([]repo.Inventory, error) {
 	return s.repo.FetchFilmInventory(ctx, arg)
+}
+
+func (s *svc) CreateFilm(ctx context.Context, arg repo.CreateFilmParams) (repo.Film, error) {
+	return s.repo.CreateFilm(ctx, arg)
+}
+
+func (s *svc) UpdateFilm(ctx context.Context, arg repo.UpdateFilmParams) (repo.Film, error) {
+	return s.repo.UpdateFilm(ctx, arg)
+}
+
+func (s *svc) DeleteFilm(ctx context.Context, filmID int32) error {
+	return s.repo.DeleteFilm(ctx, filmID)
 }
