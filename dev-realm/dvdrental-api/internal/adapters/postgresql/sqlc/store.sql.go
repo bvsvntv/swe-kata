@@ -167,6 +167,7 @@ SELECT
     store_id, manager_staff_id, address_id, last_update
 FROM 
     store
+ORDER BY store_id ASC
 LIMIT $1
 OFFSET $2
 `

@@ -3,6 +3,7 @@ SELECT
     *
 FROM 
     inventory
+ORDER BY inventory_id ASC
 LIMIT $1
 OFFSET $2;
 

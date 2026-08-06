@@ -67,6 +67,7 @@ SELECT
     city_id, city, country_id, last_update
 FROM 
     city
+ORDER BY city_id ASC
 LIMIT $1
 OFFSET $2
 `

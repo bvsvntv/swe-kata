@@ -3,6 +3,7 @@ SELECT
     *
 FROM 
     film
+ORDER BY film_id ASC
 LIMIT $1
 OFFSET $2;
 

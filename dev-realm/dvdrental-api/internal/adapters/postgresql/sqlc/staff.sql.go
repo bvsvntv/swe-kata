@@ -195,6 +195,7 @@ SELECT
     staff_id, first_name, last_name, address_id, email, store_id, active, username, password, last_update, picture
 FROM
     staff
+ORDER BY staff_id ASC
 LIMIT $1
 OFFSET $2
 `

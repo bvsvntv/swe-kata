@@ -3,6 +3,7 @@ SELECT
     *
 FROM 
     city
+ORDER BY city_id ASC
 LIMIT $1
 OFFSET $2;
 

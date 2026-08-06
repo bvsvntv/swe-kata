@@ -82,6 +82,7 @@ SELECT
     payment_id, customer_id, staff_id, rental_id, amount, payment_date
 FROM
     payment
+ORDER BY payment_id ASC
 LIMIT $1
 OFFSET $2
 `

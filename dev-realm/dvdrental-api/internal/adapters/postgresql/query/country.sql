@@ -3,6 +3,7 @@ SELECT
     *
 FROM 
     country
+ORDER BY country_id ASC
 LIMIT $1
 OFFSET $2;
 

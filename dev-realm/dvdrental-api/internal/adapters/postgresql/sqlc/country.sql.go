@@ -55,6 +55,7 @@ SELECT
     country_id, country, last_update
 FROM 
     country
+ORDER BY country_id ASC
 LIMIT $1
 OFFSET $2
 `

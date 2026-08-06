@@ -3,6 +3,7 @@ SELECT
     *
 FROM 
     store
+ORDER BY store_id ASC
 LIMIT $1
 OFFSET $2;
 

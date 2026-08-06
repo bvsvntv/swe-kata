@@ -57,6 +57,7 @@ SELECT
     category_id, name, last_update
 FROM 
     category
+ORDER BY category_id ASC
 LIMIT $1
 OFFSET $2
 `

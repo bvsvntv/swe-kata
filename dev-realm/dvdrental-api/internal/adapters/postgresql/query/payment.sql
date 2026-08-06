@@ -3,6 +3,7 @@ SELECT
     *
 FROM
     payment
+ORDER BY payment_id ASC
 LIMIT $1
 OFFSET $2;
 

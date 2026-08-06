@@ -3,6 +3,7 @@ SELECT
     *
 FROM
     customer
+ORDER BY customer_id ASC
 LIMIT $1
 OFFSET $2;
 

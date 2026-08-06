@@ -3,6 +3,7 @@ SELECT
     *
 FROM 
     actor
+ORDER BY actor_id ASC
 LIMIT $1
 OFFSET $2;
 

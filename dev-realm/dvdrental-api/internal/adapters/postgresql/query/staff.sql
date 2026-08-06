@@ -3,6 +3,7 @@ SELECT
     *
 FROM
     staff
+ORDER BY staff_id ASC
 LIMIT $1
 OFFSET $2;
 
