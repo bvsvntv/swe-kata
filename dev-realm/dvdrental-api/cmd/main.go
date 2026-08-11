@@ -9,6 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
@@ -34,8 +35,17 @@ func main() {
 		panic(err)
 	}
 	defer conn.Close(ctx)
-
 	logger.Info("database connection established")
+
+	// Redis
+	redisURL, err := redis.ParseURL(utils.GetString("REDIS_URL", "redis://:ro0T@localhost:16379/0"))
+	if err != nil {
+		panic(err)
+	}
+
+	rdb := redis.NewClient(redisURL)
+	defer rdb.Close()
+	logger.Info("redis connection established")
 
 	api := application{
 		config: cfg,
