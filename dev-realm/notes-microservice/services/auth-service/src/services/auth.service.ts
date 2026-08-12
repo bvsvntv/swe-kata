@@ -1,7 +1,5 @@
-async function register() {
-    console.log('register function @ auth service');
-
-    await generateTokens();
+async function register(email: string, password: string) {
+    return { email, password };
 }
 
 async function login() {
