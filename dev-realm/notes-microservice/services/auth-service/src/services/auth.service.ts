@@ -1,5 +1,25 @@
+import prisma from '@/lib/prisma';
+import { AppError } from '@/types';
+import { hashPassword } from '@/utils/password.util';
+
 async function register(email: string, password: string) {
-    return { email, password };
+    const existingUser = await prisma.user.findUnique({
+        where: { email },
+    });
+
+    if (existingUser) {
+        throw new AppError('Email already taken.', 400);
+    }
+
+    const passwordHash = await hashPassword(password);
+    const user = await prisma.user.create({
+        data: {
+            email,
+            password: passwordHash,
+        },
+    });
+
+    return { user };
 }
 
 async function login() {
