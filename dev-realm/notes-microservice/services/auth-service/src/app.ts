@@ -5,6 +5,7 @@ import v1Routes from './routes/v1';
 
 const app = express();
 
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

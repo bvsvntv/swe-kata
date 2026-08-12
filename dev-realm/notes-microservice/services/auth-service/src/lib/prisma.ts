@@ -19,22 +19,4 @@ process.on('beforeExit', async () => {
     await prisma.$disconnect();
 });
 
-process.on('SIGINT', async () => {
-    console.log('> Closing database connection.');
-    await prisma.$disconnect();
-    process.exit(0);
-});
-
-process.on('SIGTERM', async () => {
-    console.log('> Closing database connection.');
-    await prisma.$disconnect();
-    process.exit(0);
-});
-
-async function fetchTables() {
-    const res =
-        await prisma.$queryRaw`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'`;
-    console.table(res);
-}
-
-export { prisma, fetchTables };
+export default prisma;
