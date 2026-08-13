@@ -39,7 +39,8 @@ type dbConfig struct {
 }
 
 type redisConfig struct {
-	redisURL string
+	redisURL   string
+	defaultTTL time.Duration
 }
 
 type application struct {

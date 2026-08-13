@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"time"
 
 	"dvdrental-api/internal/utils"
 
@@ -27,7 +28,8 @@ func main() {
 			dsn: utils.GetString("DB_URL", "postgres://postgres:postgres@localhost:15432/dvdrental?sslmode=disable"),
 		},
 		rdb: redisConfig{
-			redisURL: utils.GetString("REDIS_URL", "redis://:ro0T@localhost:16379/0"),
+			redisURL:   utils.GetString("REDIS_URL", "redis://:ro0T@localhost:16379/0"),
+			defaultTTL: utils.GetDuration("REDIS_CACHE_TTL", 5*time.Minute),
 		},
 	}
 
