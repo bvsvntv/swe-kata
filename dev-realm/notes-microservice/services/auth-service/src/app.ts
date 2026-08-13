@@ -9,8 +9,10 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(errorHandler);
 
 app.use('/api/v1', v1Routes);
+
+// Global error handler
+app.use(errorHandler);
 
 export default app;
