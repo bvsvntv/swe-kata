@@ -26,6 +26,9 @@ func main() {
 		db: dbConfig{
 			dsn: utils.GetString("DB_URL", "postgres://postgres:postgres@localhost:15432/dvdrental?sslmode=disable"),
 		},
+		rdb: redisConfig{
+			redisURL: utils.GetString("REDIS_URL", "redis://:ro0T@localhost:16379/0"),
+		},
 	}
 
 	// Database
@@ -38,18 +41,22 @@ func main() {
 	logger.Info("database connection established")
 
 	// Redis
-	redisURL, err := redis.ParseURL(utils.GetString("REDIS_URL", "redis://:ro0T@localhost:16379/0"))
+	redisURL, err := redis.ParseURL(cfg.rdb.redisURL)
 	if err != nil {
 		panic(err)
 	}
 
 	rdb := redis.NewClient(redisURL)
 	defer rdb.Close()
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		panic(err)
+	}
 	logger.Info("redis connection established")
 
 	api := application{
 		config: cfg,
 		db:     conn,
+		rdb:    rdb,
 	}
 
 	if err := api.run(api.mount()); err != nil {

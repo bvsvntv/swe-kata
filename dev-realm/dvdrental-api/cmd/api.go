@@ -25,20 +25,27 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
+	"github.com/redis/go-redis/v9"
 )
 
 type config struct {
 	addr string
 	db   dbConfig
+	rdb  redisConfig
 }
 
 type dbConfig struct {
 	dsn string
 }
 
+type redisConfig struct {
+	redisURL string
+}
+
 type application struct {
 	config config
 	db     *pgx.Conn
+	rdb    *redis.Client
 }
 
 func (app *application) mount() http.Handler {
