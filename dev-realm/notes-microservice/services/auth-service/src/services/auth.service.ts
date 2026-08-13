@@ -1,6 +1,8 @@
 import prisma from '@/lib/prisma';
 import { AppError } from '@/types';
 import { hashPassword } from '@/utils/password.util';
+import { createUser } from '@/repositories/auth.repository';
+import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
 
 async function register(email: string, password: string) {
     const existingUser = await prisma.user.findUnique({
@@ -12,14 +14,15 @@ async function register(email: string, password: string) {
     }
 
     const passwordHash = await hashPassword(password);
-    const user = await prisma.user.create({
-        data: {
-            email,
-            password: passwordHash,
-        },
-    });
+    const user = await createUser(email, passwordHash);
 
-    return { user };
+    const accessToken = signAccessToken({ id: user.id, email });
+    const refreshToken = signRefreshToken({ id: user.id, email });
+
+    return {
+        accessToken,
+        refreshToken,
+    };
 }
 
 async function login() {
