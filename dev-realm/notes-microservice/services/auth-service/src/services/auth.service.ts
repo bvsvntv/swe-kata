@@ -1,14 +1,10 @@
-import prisma from '@/lib/prisma';
 import { AppError } from '@/types';
-import { hashPassword } from '@/utils/password.util';
-import { createUser } from '@/repositories/auth.repository';
+import { checkPassword, hashPassword } from '@/utils/password.util';
+import { createUser, findUserByEmail } from '@/repositories/auth.repository';
 import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
 
 async function register(email: string, password: string) {
-    const existingUser = await prisma.user.findUnique({
-        where: { email },
-    });
-
+    const existingUser = await findUserByEmail(email);
     if (existingUser) {
         throw new AppError('Email already taken.', 400);
     }
@@ -25,8 +21,24 @@ async function register(email: string, password: string) {
     };
 }
 
-async function login() {
-    console.log('login function @ auth service');
+async function login(email: string, password: string) {
+    const user = await findUserByEmail(email);
+    if (!user) {
+        throw new AppError('Invalid credentials.', 401);
+    }
+
+    const isCorrectPassword = await checkPassword(password, user.password);
+    if (!isCorrectPassword) {
+        throw new AppError('Invalid credentials.', 401);
+    }
+
+    const accessToken = signAccessToken({ id: user.id, email });
+    const refreshToken = signRefreshToken({ id: user.id, email });
+
+    return {
+        accessToken,
+        refreshToken,
+    };
 }
 
 async function logout() {

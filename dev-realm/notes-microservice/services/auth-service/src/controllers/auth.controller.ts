@@ -14,7 +14,14 @@ async function register(req: Request, res: Response) {
 }
 
 async function login(req: Request, res: Response) {
-    await authService.login();
+    const { email, password } = req.body;
+
+    const response = await authService.login(email, password);
+    return sendResponse(res, 200, {
+        success: true,
+        message: 'User has been logged in successfully.',
+        data: response,
+    });
 }
 
 async function refreshTokens(req: Request, res: Response) {
