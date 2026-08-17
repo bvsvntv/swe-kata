@@ -21,6 +21,6 @@ router.post(
 router.post('/login', validate(loginSchema, 'body'), asyncHandler(login));
 router.get('/me', authMiddleware, asyncHandler(getProfile));
 router.get('/refresh', asyncHandler(refreshTokens));
-router.get('/logout', asyncHandler(logout));
+router.get('/logout', authMiddleware, asyncHandler(logout));
 
 export default router;

@@ -15,4 +15,10 @@ async function startSession(
     });
 }
 
-export { startSession };
+async function endSession(userID: string): Promise<void> {
+    await prisma.session.deleteMany({
+        where: { userID: userID },
+    });
+}
+
+export { startSession, endSession };

@@ -1,6 +1,6 @@
 import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
 import { User } from 'generated/prisma/client';
-import { startSession } from '@/repositories/session.repository';
+import { endSession, startSession } from '@/repositories/session.repository';
 import { env } from '@/config/env.config';
 import ms from 'ms';
 
@@ -28,4 +28,8 @@ async function createSession(user: User): Promise<{
     };
 }
 
-export { createSession };
+async function deleteSession(userID: string): Promise<void> {
+    await endSession(userID);
+}
+
+export { createSession, deleteSession };

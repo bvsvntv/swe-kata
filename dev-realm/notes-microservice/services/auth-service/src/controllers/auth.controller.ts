@@ -27,7 +27,6 @@ async function login(req: Request, res: Response) {
 
 async function getProfile(req: Request, res: Response) {
     const userID = req.user?.userID;
-
     if (!userID) {
         throw new AppError('Authentication required.', 401);
     }
@@ -49,7 +48,22 @@ async function refreshTokens(req: Request, res: Response) {
 }
 
 async function logout(req: Request, res: Response) {
-    await authService.logout();
+    const userID = req.user?.userID;
+    if (!userID) {
+        throw new AppError('Authentication required.', 401);
+    }
+
+    const user = await authService.getProfile(userID);
+    if (!user) {
+        throw new AppError('User not found.', 404);
+    }
+
+    await authService.logout(userID);
+
+    return sendResponse(res, 200, {
+        success: true,
+        message: 'User has been logged out successfully.',
+    });
 }
 
 export { register, login, getProfile, refreshTokens, logout };

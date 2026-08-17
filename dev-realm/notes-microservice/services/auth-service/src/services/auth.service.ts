@@ -5,7 +5,7 @@ import {
     findUserByEmail,
     findUserByID,
 } from '@/repositories/auth.repository';
-import { createSession } from './session.service';
+import { createSession, deleteSession } from './session.service';
 
 async function register(email: string, password: string) {
     const existingUser = await findUserByEmail(email);
@@ -43,8 +43,13 @@ async function login(email: string, password: string) {
     };
 }
 
-async function logout() {
-    console.log('logout function @ auth service');
+async function logout(id: string) {
+    const user = await findUserByID(id);
+    if (!user) {
+        throw new AppError('User not found.', 404);
+    }
+
+    await deleteSession(id);
 }
 
 async function refreshTokens() {
