@@ -1,12 +1,12 @@
 export type validateTarget = 'body' | 'params' | 'query';
 
-export type ApiResponse<T> = {
+type ApiResponse<T> = {
     success: boolean;
     message: string;
     data?: T;
 };
 
-export class AppError extends Error {
+class AppError extends Error {
     public statusCode: number;
     public status: string;
     public isOperational: boolean;
@@ -21,3 +21,5 @@ export class AppError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
+
+export { ApiResponse, AppError };
