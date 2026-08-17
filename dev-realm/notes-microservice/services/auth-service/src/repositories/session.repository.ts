@@ -21,4 +21,26 @@ async function endSession(userID: string): Promise<void> {
     });
 }
 
-export { startSession, endSession };
+async function findSessionByToken(token: string) {
+    return await prisma.session.findUnique({
+        where: { token },
+        select: {
+            id: true,
+            token: true,
+            expiresAt: true,
+            userID: true,
+        },
+    });
+}
+
+async function updateSession(id: string, token: string, expiresAt: Date) {
+    return await prisma.session.update({
+        where: { id },
+        data: {
+            token,
+            expiresAt,
+        },
+    });
+}
+
+export { startSession, endSession, findSessionByToken, updateSession };

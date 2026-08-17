@@ -6,6 +6,13 @@ import {
     findUserByID,
 } from '@/repositories/auth.repository';
 import { createSession, deleteSession } from './session.service';
+import {
+    findSessionByToken,
+    updateSession,
+} from '@/repositories/session.repository';
+import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
+import ms from 'ms';
+import { env } from 'process';
 
 async function register(email: string, password: string) {
     const existingUser = await findUserByEmail(email);
@@ -52,8 +59,34 @@ async function logout(id: string) {
     await deleteSession(id);
 }
 
-async function refreshTokens() {
-    console.log('refreshTokens function @ auth service');
+async function refreshTokens(token: string) {
+    const session = await findSessionByToken(token);
+    if (!session) {
+        throw new AppError('Session not found.', 404);
+    }
+    if (session.expiresAt < new Date()) {
+        throw new AppError('Refresh token expired.', 401);
+    }
+
+    const accessToken = signAccessToken({ id: session.userID });
+    const refreshToken = signRefreshToken({ id: session.userID });
+
+    const refreshTokenExpiresIn = ms(
+        env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
+    );
+    if (typeof refreshTokenExpiresIn !== 'number') {
+        throw new Error(
+            'Invalid configuration for refresh token expiration time.',
+        );
+    }
+    const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
+
+    await updateSession(session.id, refreshToken, expiresAt);
+
+    return {
+        accessToken,
+        refreshToken,
+    };
 }
 
 async function getProfile(id: string) {

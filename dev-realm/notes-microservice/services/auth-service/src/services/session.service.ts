@@ -8,8 +8,8 @@ async function createSession(user: User): Promise<{
     accessToken: string;
     refreshToken: string;
 }> {
-    const accessToken = signAccessToken({ id: user.id, email: user.email });
-    const refreshToken = signRefreshToken({ id: user.id, email: user.email });
+    const accessToken = signAccessToken({ id: user.id });
+    const refreshToken = signRefreshToken({ id: user.id });
 
     const refreshTokenExpiresIn = ms(
         env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,

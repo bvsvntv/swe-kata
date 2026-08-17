@@ -44,7 +44,17 @@ async function getProfile(req: Request, res: Response) {
 }
 
 async function refreshTokens(req: Request, res: Response) {
-    await authService.refreshTokens();
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+        throw new AppError('Missing refresh token.', 400);
+    }
+
+    const response = await authService.refreshTokens(refreshToken);
+    return sendResponse(res, 200, {
+        success: true,
+        message: 'Session has been refreshed successfully.',
+        data: response,
+    });
 }
 
 async function logout(req: Request, res: Response) {
