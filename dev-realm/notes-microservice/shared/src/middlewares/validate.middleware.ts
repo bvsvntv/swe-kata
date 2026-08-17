@@ -1,6 +1,6 @@
-import { validateTarget } from '@/types';
 import { Request, Response, NextFunction } from 'express';
 import { ZodObject } from 'zod';
+import { validateTarget } from '../types';
 
 export function validate(
     schema: ZodObject<any>,

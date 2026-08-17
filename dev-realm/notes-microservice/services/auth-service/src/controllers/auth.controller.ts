@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as authService from '@/services/auth.service';
-import { sendResponse } from '@/utils/appResponse.util';
-import { AppError } from '@/types';
+import { sendResponse } from '@shared/src/utils/appResponse.util';
+import { AppError } from '@shared/src/types';
 
 async function register(req: Request, res: Response) {
     const { email, password } = req.body;

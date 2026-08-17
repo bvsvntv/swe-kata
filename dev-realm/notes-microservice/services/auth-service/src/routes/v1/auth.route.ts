@@ -6,14 +6,14 @@ import {
     refreshTokens,
     logout,
 } from '@/controllers/auth.controller';
-import { validate } from '@/middlewares/validate.middleware';
 import {
     loginSchema,
     refreshTokenSchema,
     registerSchema,
 } from '@/schemas/auth.schema';
-import { asyncHandler } from '@/utils/asyncHandler.util';
 import { authMiddleware } from '@/middlewares/auth.middleware';
+import { validate } from '@shared/src/middlewares/validate.middleware';
+import { asyncHandler } from '@shared/src/utils/asyncHandler.util';
 
 const router = Router();
 

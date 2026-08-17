@@ -1,4 +1,3 @@
-import { AppError } from '@/types';
 import { checkPassword, hashPassword } from '@/utils/password.util';
 import {
     createUser,
@@ -18,6 +17,7 @@ import {
 import ms from 'ms';
 import { env } from 'process';
 import { hashValue } from '@/utils/auth.utils';
+import { AppError } from '@shared/src/types';
 
 async function register(email: string, password: string) {
     const existingUser = await findUserByEmail(email);

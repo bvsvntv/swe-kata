@@ -22,11 +22,13 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@shared/*": ["../../shared/*"]
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "../../shared/**/*"
   ],
   "exclude": [
     "node_modules",
