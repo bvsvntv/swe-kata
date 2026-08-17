@@ -13,6 +13,7 @@ import {
 import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
 import ms from 'ms';
 import { env } from 'process';
+import { hashValue } from '@/utils/auth.utils';
 
 async function register(email: string, password: string) {
     const existingUser = await findUserByEmail(email);
@@ -60,7 +61,9 @@ async function logout(id: string) {
 }
 
 async function refreshTokens(token: string) {
-    const session = await findSessionByToken(token);
+    const incomingRefreshToken = hashValue(token);
+
+    const session = await findSessionByToken(incomingRefreshToken);
     if (!session) {
         throw new AppError('Session not found.', 404);
     }
@@ -68,8 +71,14 @@ async function refreshTokens(token: string) {
         throw new AppError('Refresh token expired.', 401);
     }
 
+    const isIncomingRefreshTokenValid = incomingRefreshToken === session.token;
+    if (!isIncomingRefreshTokenValid) {
+        throw new AppError('Invalid refresh token.', 401);
+    }
+
     const accessToken = signAccessToken({ id: session.userID });
     const refreshToken = signRefreshToken({ id: session.userID });
+    const hashedToken = hashValue(refreshToken);
 
     const refreshTokenExpiresIn = ms(
         env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
@@ -81,7 +90,7 @@ async function refreshTokens(token: string) {
     }
     const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
 
-    await updateSession(session.id, refreshToken, expiresAt);
+    await updateSession(session.id, hashedToken, expiresAt);
 
     return {
         accessToken,

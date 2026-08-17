@@ -3,6 +3,7 @@ import { User } from 'generated/prisma/client';
 import { endSession, startSession } from '@/repositories/session.repository';
 import { env } from '@/config/env.config';
 import ms from 'ms';
+import { hashValue } from '@/utils/auth.utils';
 
 async function createSession(user: User): Promise<{
     accessToken: string;
@@ -10,6 +11,8 @@ async function createSession(user: User): Promise<{
 }> {
     const accessToken = signAccessToken({ id: user.id });
     const refreshToken = signRefreshToken({ id: user.id });
+
+    const tokenHash = hashValue(refreshToken);
 
     const refreshTokenExpiresIn = ms(
         env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
@@ -20,7 +23,8 @@ async function createSession(user: User): Promise<{
         );
     }
     const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
-    await startSession(user.id, refreshToken, expiresAt);
+
+    await startSession(user.id, tokenHash, expiresAt);
 
     return {
         accessToken,
