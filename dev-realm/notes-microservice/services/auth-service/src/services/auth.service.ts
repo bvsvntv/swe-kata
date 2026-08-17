@@ -7,10 +7,14 @@ import {
 } from '@/repositories/auth.repository';
 import { createSession, deleteSession } from './session.service';
 import {
-    findSessionByToken,
+    findSessionByID,
     updateSession,
 } from '@/repositories/session.repository';
-import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
+import {
+    signAccessToken,
+    signRefreshToken,
+    verifyRefreshToken,
+} from '@/utils/jwt.util';
 import ms from 'ms';
 import { env } from 'process';
 import { hashValue } from '@/utils/auth.utils';
@@ -60,41 +64,44 @@ async function logout(id: string) {
     await deleteSession(id);
 }
 
-async function refreshTokens(token: string) {
-    const incomingRefreshToken = hashValue(token);
+async function refreshTokens(refreshToken: string) {
+    const payload = verifyRefreshToken(refreshToken);
+    const { sessionID, sub: userID } = payload;
 
-    const session = await findSessionByToken(incomingRefreshToken);
+    const session = await findSessionByID(sessionID);
+
     if (!session) {
         throw new AppError('Session not found.', 404);
     }
     if (session.expiresAt < new Date()) {
-        throw new AppError('Refresh token expired.', 401);
+        throw new AppError('Refresh refreshToken expired.', 401);
     }
 
+    const incomingRefreshToken = hashValue(refreshToken);
     const isIncomingRefreshTokenValid = incomingRefreshToken === session.token;
     if (!isIncomingRefreshTokenValid) {
-        throw new AppError('Invalid refresh token.', 401);
+        throw new AppError('Invalid refresh refreshToken.', 401);
     }
 
-    const accessToken = signAccessToken({ id: session.userID });
-    const refreshToken = signRefreshToken({ id: session.userID });
-    const hashedToken = hashValue(refreshToken);
+    const newAccessToken = signAccessToken({ sub: userID, sessionID });
+    const newRefreshToken = signRefreshToken({ sub: userID, sessionID });
 
     const refreshTokenExpiresIn = ms(
         env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
     );
     if (typeof refreshTokenExpiresIn !== 'number') {
         throw new Error(
-            'Invalid configuration for refresh token expiration time.',
+            'Invalid configuration for refresh refreshToken expiration time.',
         );
     }
     const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
 
-    await updateSession(session.id, hashedToken, expiresAt);
+    const hashedToken = hashValue(refreshToken);
+    await updateSession({ sessionID, token: hashedToken, expiresAt });
 
     return {
-        accessToken,
-        refreshToken,
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
     };
 }
 

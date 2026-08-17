@@ -1,16 +1,15 @@
+import ms from 'ms';
 import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
 import { User } from 'generated/prisma/client';
 import { endSession, startSession } from '@/repositories/session.repository';
 import { env } from '@/config/env.config';
-import ms from 'ms';
-import { hashValue } from '@/utils/auth.utils';
+import { hashValue, generateSessionID } from '@/utils/auth.utils';
 
-async function createSession(user: User): Promise<{
-    accessToken: string;
-    refreshToken: string;
-}> {
-    const accessToken = signAccessToken({ id: user.id });
-    const refreshToken = signRefreshToken({ id: user.id });
+async function createSession(user: User) {
+    const sessionID = generateSessionID();
+
+    const accessToken = signAccessToken({ sub: user.id, sessionID });
+    const refreshToken = signRefreshToken({ sub: user.id, sessionID });
 
     const tokenHash = hashValue(refreshToken);
 
@@ -24,7 +23,12 @@ async function createSession(user: User): Promise<{
     }
     const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
 
-    await startSession(user.id, tokenHash, expiresAt);
+    await startSession({
+        sessionID,
+        userID: user.id,
+        token: tokenHash,
+        expiresAt,
+    });
 
     return {
         accessToken,

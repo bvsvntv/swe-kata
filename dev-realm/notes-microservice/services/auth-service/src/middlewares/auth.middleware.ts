@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { AppError } from '@/types';
 import { verifyAccessToken } from '@/utils/jwt.util';
+import { JWTPayloadType } from '@/types/auth.types';
 
 function authMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
@@ -20,9 +21,10 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
             return next(new AppError('Access token missing.', 401));
         }
 
-        const payload = verifyAccessToken(accessToken);
+        const payload = verifyAccessToken(accessToken) as JWTPayloadType;
         req.user = {
-            userID: payload?.id,
+            userID: payload?.sub,
+            sessionID: payload?.sessionID,
         };
 
         next();

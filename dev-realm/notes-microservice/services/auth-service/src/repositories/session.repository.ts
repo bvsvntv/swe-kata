@@ -1,13 +1,13 @@
 import prisma from '@/lib/prisma';
+import { StartSessionType, UpdateSessionType } from '@/types/auth.types';
 import { Session } from 'generated/prisma/client';
 
-async function startSession(
-    userID: string,
-    token: string,
-    expiresAt: Date,
-): Promise<Session> {
+async function startSession(args: StartSessionType): Promise<Session> {
+    const { sessionID, userID, token, expiresAt } = args;
+
     return await prisma.session.create({
         data: {
+            id: sessionID,
             userID,
             token,
             expiresAt,
@@ -21,9 +21,9 @@ async function endSession(userID: string): Promise<void> {
     });
 }
 
-async function findSessionByToken(token: string) {
+async function findSessionByID(id: string) {
     return await prisma.session.findUnique({
-        where: { token },
+        where: { id },
         select: {
             id: true,
             token: true,
@@ -33,9 +33,10 @@ async function findSessionByToken(token: string) {
     });
 }
 
-async function updateSession(id: string, token: string, expiresAt: Date) {
+async function updateSession(args: UpdateSessionType) {
+    const { sessionID, token, expiresAt } = args;
     return await prisma.session.update({
-        where: { id },
+        where: { id: sessionID },
         data: {
             token,
             expiresAt,
@@ -43,4 +44,4 @@ async function updateSession(id: string, token: string, expiresAt: Date) {
     });
 }
 
-export { startSession, endSession, findSessionByToken, updateSession };
+export { startSession, endSession, findSessionByID, updateSession };
