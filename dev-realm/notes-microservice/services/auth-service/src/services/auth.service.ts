@@ -1,6 +1,10 @@
 import { AppError } from '@/types';
 import { checkPassword, hashPassword } from '@/utils/password.util';
-import { createUser, findUserByEmail } from '@/repositories/auth.repository';
+import {
+    createUser,
+    findUserByEmail,
+    findUserByID,
+} from '@/repositories/auth.repository';
 import { createSession } from './session.service';
 
 async function register(email: string, password: string) {
@@ -43,12 +47,17 @@ async function logout() {
     console.log('logout function @ auth service');
 }
 
-async function generateTokens() {
-    console.log('generateTokens function @ auth service');
-}
-
 async function refreshTokens() {
     console.log('refreshTokens function @ auth service');
 }
 
-export { register, login, logout, generateTokens, refreshTokens };
+async function getProfile(id: string) {
+    const user = await findUserByID(id);
+    if (!user) {
+        throw new AppError('User not found.', 404);
+    }
+
+    return user;
+}
+
+export { register, login, logout, refreshTokens, getProfile };

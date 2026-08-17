@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as authService from '@/services/auth.service';
 import { sendResponse } from '@/utils/appResponse.util';
+import { AppError } from '@/types';
 
 async function register(req: Request, res: Response) {
     const { email, password } = req.body;
@@ -24,6 +25,25 @@ async function login(req: Request, res: Response) {
     });
 }
 
+async function getProfile(req: Request, res: Response) {
+    const userID = req.user?.userID;
+
+    if (!userID) {
+        throw new AppError('Authentication required.', 401);
+    }
+
+    const user = await authService.getProfile(userID);
+    if (!user) {
+        throw new AppError('User not found.', 404);
+    }
+
+    return sendResponse(res, 200, {
+        success: true,
+        message: 'User has been fetched.',
+        data: user,
+    });
+}
+
 async function refreshTokens(req: Request, res: Response) {
     await authService.refreshTokens();
 }
@@ -32,4 +52,4 @@ async function logout(req: Request, res: Response) {
     await authService.logout();
 }
 
-export { register, login, refreshTokens, logout };
+export { register, login, getProfile, refreshTokens, logout };

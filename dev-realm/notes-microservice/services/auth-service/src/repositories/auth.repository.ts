@@ -7,6 +7,18 @@ async function findUserByEmail(email: string) {
     });
 }
 
+async function findUserByID(id: string) {
+    return await prisma.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+        },
+    });
+}
+
 async function createUser(email: string, password: string): Promise<User> {
     return await prisma.user.create({
         data: {
@@ -16,4 +28,4 @@ async function createUser(email: string, password: string): Promise<User> {
     });
 }
 
-export { findUserByEmail, createUser };
+export { findUserByEmail, findUserByID, createUser };
