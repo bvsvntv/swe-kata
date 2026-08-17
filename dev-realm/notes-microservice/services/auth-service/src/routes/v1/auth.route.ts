@@ -1,17 +1,23 @@
 import { Router } from 'express';
-import * as authController from '@/controllers/auth.controller';
+import {
+    register,
+    login,
+    refreshTokens,
+    logout,
+} from '@/controllers/auth.controller';
 import { validate } from '@/middlewares/validate.middleware';
 import { loginSchema, registerSchema } from '@/schemas/auth.schema';
+import { asyncHandler } from '@/utils/asyncHandler.util';
 
 const router = Router();
 
 router.post(
     '/register',
     validate(registerSchema, 'body'),
-    authController.register,
+    asyncHandler(register),
 );
-router.post('/login', validate(loginSchema, 'body'), authController.login);
-router.get('/refresh', authController.refreshTokens);
-router.get('/logout', authController.logout);
+router.post('/login', validate(loginSchema, 'body'), asyncHandler(login));
+router.get('/refresh', asyncHandler(refreshTokens));
+router.get('/logout', asyncHandler(logout));
 
 export default router;

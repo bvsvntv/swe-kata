@@ -1,7 +1,7 @@
 import { AppError } from '@/types';
 import { checkPassword, hashPassword } from '@/utils/password.util';
 import { createUser, findUserByEmail } from '@/repositories/auth.repository';
-import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
+import { createSession } from './session.service';
 
 async function register(email: string, password: string) {
     const existingUser = await findUserByEmail(email);
@@ -12,8 +12,7 @@ async function register(email: string, password: string) {
     const passwordHash = await hashPassword(password);
     const user = await createUser(email, passwordHash);
 
-    const accessToken = signAccessToken({ id: user.id, email });
-    const refreshToken = signRefreshToken({ id: user.id, email });
+    const { accessToken, refreshToken } = await createSession(user);
 
     return {
         accessToken,
@@ -32,8 +31,7 @@ async function login(email: string, password: string) {
         throw new AppError('Invalid credentials.', 401);
     }
 
-    const accessToken = signAccessToken({ id: user.id, email });
-    const refreshToken = signRefreshToken({ id: user.id, email });
+    const { accessToken, refreshToken } = await createSession(user);
 
     return {
         accessToken,

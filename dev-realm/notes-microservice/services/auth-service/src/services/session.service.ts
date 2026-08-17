@@ -1,0 +1,31 @@
+import { signAccessToken, signRefreshToken } from '@/utils/jwt.util';
+import { User } from 'generated/prisma/client';
+import { startSession } from '@/repositories/session.repository';
+import { env } from '@/config/env.config';
+import ms from 'ms';
+
+async function createSession(user: User): Promise<{
+    accessToken: string;
+    refreshToken: string;
+}> {
+    const accessToken = signAccessToken({ id: user.id, email: user.email });
+    const refreshToken = signRefreshToken({ id: user.id, email: user.email });
+
+    const refreshTokenExpiresIn = ms(
+        env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
+    );
+    if (typeof refreshTokenExpiresIn !== 'number') {
+        throw new Error(
+            'Invalid configuration for refresh token expiration time.',
+        );
+    }
+    const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
+    await startSession(user.id, refreshToken, expiresAt);
+
+    return {
+        accessToken,
+        refreshToken,
+    };
+}
+
+export { createSession };
