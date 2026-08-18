@@ -1,4 +1,4 @@
-import { AppError } from '@/types';
+import { AppError } from '@shared/src/types';
 import { Request, Response, NextFunction } from 'express';
 
 export function errorHandler(

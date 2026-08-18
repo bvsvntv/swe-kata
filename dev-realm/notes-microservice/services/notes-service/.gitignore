@@ -5,3 +5,5 @@ node_modules/
 
 # files
 .env
+
+/generated/prisma

@@ -7,7 +7,7 @@ services:
     ports:
       - "19090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-swe-kata-data:/prometheus
     networks:
       - observability-net
@@ -20,7 +20,7 @@ services:
     ports:
       - "13100:3100"
     volumes:
-      - ./loki/loki.yml:/etc/loki/loki.yml:ro
+      - ./loki/loki.yml:/etc/loki/loki.yml
       - loki-swe-kata-data:/loki
     command: -config.file=/etc/loki/loki.yml
     networks:
