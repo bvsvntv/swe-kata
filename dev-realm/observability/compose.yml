@@ -1,0 +1,50 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: prometheus-swe-kata
+    environment:
+      TZ: Asia/Kathmandu
+    ports:
+      - "19090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-swe-kata-data:/prometheus
+    networks:
+      - observability-net
+
+  loki:
+    image: grafana/loki:3.2.1
+    container_name: loki-swe-kata
+    environment:
+      TZ: Asia/Kathmandu
+    ports:
+      - "13100:3100"
+    volumes:
+      - ./loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki-swe-kata-data:/loki
+    command: -config.file=/etc/loki/loki.yml
+    networks:
+      - observability-net
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: grafana-swe-kata
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      TZ: Asia/Kathmandu
+    ports:
+      - "13000:3000"
+    volumes:
+      - grafana-swe-kata-data:/var/lib/grafana
+    networks:
+      - observability-net
+
+volumes:
+  prometheus-swe-kata-data:
+  loki-swe-kata-data:
+  grafana-swe-kata-data:
+
+networks:
+  observability-net:
+    driver: bridge
