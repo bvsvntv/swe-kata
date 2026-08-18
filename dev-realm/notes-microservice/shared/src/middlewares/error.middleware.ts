@@ -1,5 +1,5 @@
-import { AppError } from '@shared/src/types';
 import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../types';
 
 export function errorHandler(
     error: AppError,
