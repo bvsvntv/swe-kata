@@ -1,8 +1,3 @@
-type JWTPayloadType = {
-    sub: string;
-    sessionID: string;
-};
-
 type StartSessionType = {
     sessionID: string;
     userID: string;
@@ -16,4 +11,4 @@ type UpdateSessionType = {
     expiresAt: Date;
 };
 
-export { StartSessionType, UpdateSessionType, JWTPayloadType };
+export { StartSessionType, UpdateSessionType };
