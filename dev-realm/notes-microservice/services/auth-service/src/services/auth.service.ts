@@ -15,9 +15,9 @@ import {
     verifyRefreshToken,
 } from '@/utils/jwt.util';
 import ms from 'ms';
-import { env } from 'process';
 import { hashValue } from '@/utils/auth.utils';
 import { AppError } from '@shared/src/types';
+import { env } from '@/config/env.config';
 
 async function register(email: string, password: string) {
     const existingUser = await findUserByEmail(email);
