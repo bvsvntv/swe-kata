@@ -3,7 +3,7 @@ import * as noteService from '../services/note.service';
 import { sendResponse } from '@shared/src/utils/appResponse.util';
 import { AppError } from '@shared/src/types';
 
-async function create(req: Request, res: Response) {
+async function createNoteController(req: Request, res: Response) {
     const userID = req.user?.userID;
     const { title, content }: CreateNoteType = req.body;
 
@@ -20,7 +20,7 @@ async function create(req: Request, res: Response) {
     });
 }
 
-async function get(req: Request, res: Response) {
+async function getNoteController(req: Request, res: Response) {
     const { noteID } = req.params;
 
     const note = await noteService.get(noteID as string);
@@ -31,7 +31,7 @@ async function get(req: Request, res: Response) {
     });
 }
 
-async function update(req: Request, res: Response) {
+async function updateNoteController(req: Request, res: Response) {
     const { noteID } = req.params;
     const { title, content } = req.body;
 
@@ -43,7 +43,7 @@ async function update(req: Request, res: Response) {
     });
 }
 
-async function patch(req: Request, res: Response) {
+async function patchNoteController(req: Request, res: Response) {
     const { noteID } = req.params;
     const { title, content } = req.body;
 
@@ -55,7 +55,7 @@ async function patch(req: Request, res: Response) {
     });
 }
 
-async function remove(req: Request, res: Response) {
+async function deleteNoteController(req: Request, res: Response) {
     const { noteID } = req.params;
 
     await noteService.remove(noteID as string);
@@ -66,4 +66,10 @@ async function remove(req: Request, res: Response) {
     });
 }
 
-export { create, get, update, patch, remove };
+export {
+    createNoteController,
+    getNoteController,
+    updateNoteController,
+    patchNoteController,
+    deleteNoteController,
+};

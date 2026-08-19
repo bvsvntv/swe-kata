@@ -1,9 +1,9 @@
 import {
-    create,
-    get,
-    patch,
-    remove,
-    update,
+    createNoteController,
+    getNoteController,
+    updateNoteController,
+    patchNoteController,
+    deleteNoteController,
 } from '@/controllers/note.controller';
 import {
     createNoteSchema,
@@ -18,29 +18,37 @@ import { Router } from 'express';
 
 const router = Router();
 
-router.post('/', validate(createNoteSchema, 'body'), asyncHandler(create));
-router.get(
-    '/:id',
-    validate(updateNoteParamsSchema, 'params'),
-    asyncHandler(get),
-);
-router.put(
-    '/:id',
-    validate(updateNoteParamsSchema, 'params'),
-    validate(updateNoteSchema, 'body'),
-    asyncHandler(update),
-);
-router.patch(
-    '/:id',
-
-    validate(updateNoteParamsSchema, 'params'),
-    validate(patchNoteSchema, 'body'),
-    asyncHandler(patch),
-);
-router.delete(
-    '/:id',
-    validate(deleteNoteParamsSchema, 'params'),
-    asyncHandler(remove),
-);
+router
+    .route('/')
+    .post(
+        validate(createNoteSchema, 'body'),
+        asyncHandler(createNoteController),
+    );
+router
+    .route('/:id')
+    .get(
+        validate(updateNoteParamsSchema, 'params'),
+        asyncHandler(getNoteController),
+    );
+router
+    .route('/:id')
+    .put(
+        validate(updateNoteParamsSchema, 'params'),
+        validate(updateNoteSchema, 'body'),
+        asyncHandler(updateNoteController),
+    );
+router
+    .route('/:id')
+    .patch(
+        validate(updateNoteParamsSchema, 'params'),
+        validate(patchNoteSchema, 'body'),
+        asyncHandler(patchNoteController),
+    );
+router
+    .route('/:id')
+    .delete(
+        validate(deleteNoteParamsSchema, 'params'),
+        asyncHandler(deleteNoteController),
+    );
 
 export default router;

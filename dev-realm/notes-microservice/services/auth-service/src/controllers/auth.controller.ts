@@ -3,7 +3,7 @@ import * as authService from '@/services/auth.service';
 import { sendResponse } from '@shared/src/utils/appResponse.util';
 import { AppError } from '@shared/src/types';
 
-async function register(req: Request, res: Response) {
+async function registerController(req: Request, res: Response) {
     const { email, password } = req.body;
 
     const response = await authService.register(email, password);
@@ -14,7 +14,7 @@ async function register(req: Request, res: Response) {
     });
 }
 
-async function login(req: Request, res: Response) {
+async function loginController(req: Request, res: Response) {
     const { email, password } = req.body;
 
     const response = await authService.login(email, password);
@@ -25,7 +25,7 @@ async function login(req: Request, res: Response) {
     });
 }
 
-async function getProfile(req: Request, res: Response) {
+async function getProfileController(req: Request, res: Response) {
     const userID = req.user?.userID;
     if (!userID) {
         throw new AppError('Authentication required.', 401);
@@ -43,7 +43,7 @@ async function getProfile(req: Request, res: Response) {
     });
 }
 
-async function refreshTokens(req: Request, res: Response) {
+async function refreshTokensController(req: Request, res: Response) {
     const { refreshToken } = req.body;
     if (!refreshToken) {
         throw new AppError('Missing refresh token.', 400);
@@ -57,7 +57,7 @@ async function refreshTokens(req: Request, res: Response) {
     });
 }
 
-async function logout(req: Request, res: Response) {
+async function logoutController(req: Request, res: Response) {
     const userID = req.user?.userID;
     if (!userID) {
         throw new AppError('Authentication required.', 401);
@@ -76,4 +76,10 @@ async function logout(req: Request, res: Response) {
     });
 }
 
-export { register, login, getProfile, refreshTokens, logout };
+export {
+    registerController,
+    loginController,
+    getProfileController,
+    refreshTokensController,
+    logoutController,
+};

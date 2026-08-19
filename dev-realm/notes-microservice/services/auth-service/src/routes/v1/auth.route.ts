@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {
-    register,
-    login,
-    getProfile,
-    refreshTokens,
-    logout,
+    registerController,
+    loginController,
+    getProfileController,
+    refreshTokensController,
+    logoutController,
 } from '@/controllers/auth.controller';
 import {
     loginSchema,
@@ -17,19 +17,20 @@ import { asyncHandler } from '@shared/src/utils/asyncHandler.util';
 
 const router = Router();
 
-router.post(
-    '/register',
-    validate(registerSchema, 'body'),
-    asyncHandler(register),
-);
-router.post('/login', validate(loginSchema, 'body'), asyncHandler(login));
-router.post(
-    '/refresh',
-    authMiddleware,
-    validate(refreshTokenSchema, 'body'),
-    asyncHandler(refreshTokens),
-);
-router.get('/me', authMiddleware, asyncHandler(getProfile));
-router.get('/logout', authMiddleware, asyncHandler(logout));
+router
+    .route('/register')
+    .post(validate(registerSchema, 'body'), asyncHandler(registerController));
+router
+    .route('/login')
+    .post(validate(loginSchema, 'body'), asyncHandler(loginController));
+router
+    .route('/refresh')
+    .post(
+        authMiddleware,
+        validate(refreshTokenSchema, 'body'),
+        asyncHandler(refreshTokensController),
+    );
+router.route('/me').get(authMiddleware, asyncHandler(getProfileController));
+router.route('/logout').get(authMiddleware, asyncHandler(logoutController));
 
 export default router;
