@@ -13,29 +13,29 @@ async function createNoteController(req: Request, res: Response) {
 
     const note = await noteService.create({ userID, title, content });
 
-    return sendResponse(res, 200, {
+    return sendResponse(res, 201, {
         success: true,
-        message: 'Note has been updated.',
+        message: 'Note has been created.',
         data: note,
     });
 }
 
 async function getNoteController(req: Request, res: Response) {
-    const { noteID } = req.params;
+    const { id } = req.params;
 
-    const note = await noteService.get(noteID as string);
+    const note = await noteService.get(id as string);
     return sendResponse(res, 200, {
         success: true,
-        message: 'Note has been updated.',
+        message: 'Note has been fetched.',
         data: note,
     });
 }
 
 async function updateNoteController(req: Request, res: Response) {
-    const { noteID } = req.params;
+    const { id } = req.params;
     const { title, content } = req.body;
 
-    const note = await noteService.update(noteID as string, { title, content });
+    const note = await noteService.update(id as string, { title, content });
     return sendResponse(res, 200, {
         success: true,
         message: 'Note has been updated.',
@@ -44,10 +44,10 @@ async function updateNoteController(req: Request, res: Response) {
 }
 
 async function patchNoteController(req: Request, res: Response) {
-    const { noteID } = req.params;
+    const { id } = req.params;
     const { title, content } = req.body;
 
-    const note = await noteService.patch(noteID as string, { title, content });
+    const note = await noteService.patch(id as string, { title, content });
     return sendResponse(res, 200, {
         success: true,
         message: 'Note has been updated.',
@@ -56,9 +56,9 @@ async function patchNoteController(req: Request, res: Response) {
 }
 
 async function deleteNoteController(req: Request, res: Response) {
-    const { noteID } = req.params;
+    const { id } = req.params;
 
-    await noteService.remove(noteID as string);
+    await noteService.remove(id as string);
 
     return sendResponse(res, 200, {
         success: true,

@@ -5,9 +5,11 @@ const createNoteSchema = z.object({
     content: z.string(),
 });
 
-const updateNoteParamsSchema = z.object({
-    noteID: z.uuid(),
+const getNoteParamsSchema = z.object({
+    id: z.uuid(),
 });
+
+const updateNoteParamsSchema = getNoteParamsSchema;
 
 const updateNoteSchema = createNoteSchema;
 
@@ -17,6 +19,7 @@ const deleteNoteParamsSchema = updateNoteParamsSchema;
 
 export {
     createNoteSchema,
+    getNoteParamsSchema,
     updateNoteParamsSchema,
     updateNoteSchema,
     patchNoteSchema,

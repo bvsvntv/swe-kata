@@ -9,6 +9,7 @@ import { authMiddleware } from '@/middlewares/auth.middleware';
 import {
     createNoteSchema,
     deleteNoteParamsSchema,
+    getNoteParamsSchema,
     patchNoteSchema,
     updateNoteParamsSchema,
     updateNoteSchema,
@@ -30,7 +31,7 @@ router
     .route('/:id')
     .get(
         authMiddleware,
-        validate(updateNoteParamsSchema, 'params'),
+        validate(getNoteParamsSchema, 'params'),
         asyncHandler(getNoteController),
     );
 router
