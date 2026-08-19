@@ -6,7 +6,7 @@ export function validate(
     schema: ZodObject<any>,
     target: validateTarget = 'body',
 ) {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return (req: Request, res: Response, next: NextFunction): void => {
         const payload = req[target];
         const result = schema.safeParse(payload);
 
@@ -21,6 +21,8 @@ export function validate(
                     .map((error) => `${error.field}: ${error.message}`)
                     .join(', '),
             });
+
+            return;
         }
 
         req[target] = result.data;
