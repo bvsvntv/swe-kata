@@ -5,6 +5,7 @@ import {
     patchNoteController,
     deleteNoteController,
 } from '@/controllers/note.controller';
+import { authMiddleware } from '@/middlewares/auth.middleware';
 import {
     createNoteSchema,
     deleteNoteParamsSchema,
@@ -21,18 +22,21 @@ const router = Router();
 router
     .route('/')
     .post(
+        authMiddleware,
         validate(createNoteSchema, 'body'),
         asyncHandler(createNoteController),
     );
 router
     .route('/:id')
     .get(
+        authMiddleware,
         validate(updateNoteParamsSchema, 'params'),
         asyncHandler(getNoteController),
     );
 router
     .route('/:id')
     .put(
+        authMiddleware,
         validate(updateNoteParamsSchema, 'params'),
         validate(updateNoteSchema, 'body'),
         asyncHandler(updateNoteController),
@@ -40,6 +44,7 @@ router
 router
     .route('/:id')
     .patch(
+        authMiddleware,
         validate(updateNoteParamsSchema, 'params'),
         validate(patchNoteSchema, 'body'),
         asyncHandler(patchNoteController),
@@ -47,6 +52,7 @@ router
 router
     .route('/:id')
     .delete(
+        authMiddleware,
         validate(deleteNoteParamsSchema, 'params'),
         asyncHandler(deleteNoteController),
     );
