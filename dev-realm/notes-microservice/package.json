@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:auth-svc": "npm --prefix services/auth-service run dev",
+    "start:notes-svc": "npm --prefix services/notes-service run dev"
   },
   "keywords": [],
   "author": "",
