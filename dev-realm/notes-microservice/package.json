@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start:auth-svc": "npm --prefix services/auth-service run dev",
-    "start:notes-svc": "npm --prefix services/notes-service run dev"
+    "start:notes-svc": "npm --prefix services/notes-service run dev",
+    "start:user-svc": "npm --prefix services/user-service run dev"
   },
   "keywords": [],
   "author": "",
