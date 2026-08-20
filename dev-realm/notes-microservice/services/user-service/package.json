@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch ./src/index.ts"
+    "dev": "tsx watch ./src/index.ts",
+    "prisma:migrate": "npx prisma migrate dev --name init",
+    "prisma:generate": "npx prisma generate"
   },
   "keywords": [],
   "author": "",

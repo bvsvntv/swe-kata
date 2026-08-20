@@ -1,5 +1,6 @@
 import app from './app';
-import { env } from './configs/env.config';
+import { env } from '@/configs/env.config';
+import prisma from '@/lib/prisma';
 
 const PORT = env.SERVER_PORT;
 const ENVIRONMENT = env.SERVER_ENV;
@@ -16,6 +17,9 @@ async function gracefulShutdown(signal: string) {
     );
 
     server.close(async () => {
+        // Release db connection
+        await prisma.$disconnect();
+        console.log('> Closing database connection.');
         process.exit(0);
     });
 }
