@@ -58,6 +58,11 @@ async function patch(id: string, args: PatchNoteType) {
 }
 
 async function remove(id: string) {
+    const note = await getNoteByID(id);
+    if (!note) {
+        throw new AppError('Note not found.', 404);
+    }
+
     return deleteNote(id);
 }
 
