@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
-import { AppError, JWTPayloadType } from '../types';
+import { AppError } from '../types';
+import { JWTPayloadType } from '../types/auth.types';
 
 function createAuthMiddleware(
     verifyAccessToken: (token: string) => JWTPayloadType,

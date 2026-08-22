@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
-import { JWTPayloadType } from '../types';
+import { JWTPayloadType } from '../types/auth.types';
 
 type JwtConfig = {
     accessTokenSecret: string;
