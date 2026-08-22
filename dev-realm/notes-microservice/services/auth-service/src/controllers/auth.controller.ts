@@ -7,28 +7,34 @@ import { clearCookies, setCookies } from '@/utils/auth.utils';
 async function registerController(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    const response = await authService.register(email, password);
+    const { accessToken, refreshToken } = await authService.register(
+        email,
+        password,
+    );
 
-    setCookies(res, response.refreshToken);
+    setCookies(res, refreshToken);
 
     return sendResponse(res, 201, {
         success: true,
         message: 'User has been registered successfully.',
-        data: response,
+        data: { accessToken },
     });
 }
 
 async function loginController(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    const response = await authService.login(email, password);
+    const { accessToken, refreshToken } = await authService.login(
+        email,
+        password,
+    );
 
-    setCookies(res, response.refreshToken);
+    setCookies(res, refreshToken);
 
     return sendResponse(res, 200, {
         success: true,
         message: 'User has been logged in successfully.',
-        data: response,
+        data: { accessToken },
     });
 }
 
@@ -57,14 +63,15 @@ async function refreshTokensController(req: Request, res: Response) {
         throw new AppError('Missing refresh token.', 401);
     }
 
-    const response = await authService.refreshTokens(refreshToken);
+    const { accessToken, refreshToken: newRefreshToken } =
+        await authService.refreshTokens(refreshToken);
 
-    setCookies(res, response.refreshToken);
+    setCookies(res, newRefreshToken);
 
     return sendResponse(res, 200, {
         success: true,
         message: 'Session has been refreshed successfully.',
-        data: response,
+        data: { accessToken },
     });
 }
 
