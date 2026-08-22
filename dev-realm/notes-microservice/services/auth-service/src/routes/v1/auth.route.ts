@@ -6,11 +6,7 @@ import {
     refreshTokensController,
     logoutController,
 } from '@/controllers/auth.controller';
-import {
-    loginSchema,
-    refreshTokenSchema,
-    registerSchema,
-} from '@/schemas/auth.schema';
+import { loginSchema, registerSchema } from '@/schemas/auth.schema';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { validate } from '@shared/src/middlewares/validate.middleware';
 import { asyncHandler } from '@shared/src/utils/asyncHandler.util';
@@ -23,13 +19,7 @@ router
 router
     .route('/login')
     .post(validate(loginSchema, 'body'), asyncHandler(loginController));
-router
-    .route('/refresh')
-    .post(
-        authMiddleware,
-        validate(refreshTokenSchema, 'body'),
-        asyncHandler(refreshTokensController),
-    );
+router.route('/refresh').post(asyncHandler(refreshTokensController));
 router.route('/me').get(authMiddleware, asyncHandler(getProfileController));
 router.route('/logout').get(authMiddleware, asyncHandler(logoutController));
 

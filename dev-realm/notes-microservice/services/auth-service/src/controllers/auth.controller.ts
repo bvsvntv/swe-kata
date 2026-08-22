@@ -2,11 +2,15 @@ import { Request, Response } from 'express';
 import * as authService from '@/services/auth.service';
 import { sendResponse } from '@shared/src/utils/appResponse.util';
 import { AppError } from '@shared/src/types';
+import { clearCookies, setCookies } from '@/utils/auth.utils';
 
 async function registerController(req: Request, res: Response) {
     const { email, password } = req.body;
 
     const response = await authService.register(email, password);
+
+    setCookies(res, response.refreshToken);
+
     return sendResponse(res, 201, {
         success: true,
         message: 'User has been registered successfully.',
@@ -18,6 +22,9 @@ async function loginController(req: Request, res: Response) {
     const { email, password } = req.body;
 
     const response = await authService.login(email, password);
+
+    setCookies(res, response.refreshToken);
+
     return sendResponse(res, 200, {
         success: true,
         message: 'User has been logged in successfully.',
@@ -44,12 +51,16 @@ async function getProfileController(req: Request, res: Response) {
 }
 
 async function refreshTokensController(req: Request, res: Response) {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies?.refreshToken;
+
     if (!refreshToken) {
-        throw new AppError('Missing refresh token.', 400);
+        throw new AppError('Missing refresh token.', 401);
     }
 
     const response = await authService.refreshTokens(refreshToken);
+
+    setCookies(res, response.refreshToken);
+
     return sendResponse(res, 200, {
         success: true,
         message: 'Session has been refreshed successfully.',
@@ -69,6 +80,8 @@ async function logoutController(req: Request, res: Response) {
     }
 
     await authService.logout(userID);
+
+    clearCookies(res);
 
     return sendResponse(res, 200, {
         success: true,
