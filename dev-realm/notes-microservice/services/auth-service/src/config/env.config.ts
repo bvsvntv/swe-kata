@@ -14,6 +14,8 @@ const envSchema = z.object({
     ACCESS_TOKEN_EXPIRES_IN: z.string(),
     REFRESH_TOKEN_SECRET: z.string(),
     REFRESH_TOKEN_EXPIRES_IN: z.string(),
+    LOG_LEVEL: z.string(),
+    LOG_DIRECTORY: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
