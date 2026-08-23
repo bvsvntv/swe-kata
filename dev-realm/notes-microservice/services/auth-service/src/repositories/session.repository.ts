@@ -3,13 +3,15 @@ import { StartSessionType, UpdateSessionType } from '@/types/auth.types';
 import { Session } from 'generated/prisma/client';
 
 async function startSession(args: StartSessionType): Promise<Session> {
-    const { sessionID, userID, token, expiresAt } = args;
+    const { sessionID, userID, token, userAgent, ipAddress, expiresAt } = args;
 
     return await prisma.session.create({
         data: {
             id: sessionID,
             userID,
             token,
+            userAgent,
+            ipAddress,
             expiresAt,
         },
     });

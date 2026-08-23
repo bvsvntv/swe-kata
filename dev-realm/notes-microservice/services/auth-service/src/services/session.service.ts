@@ -5,7 +5,7 @@ import { endSession, startSession } from '@/repositories/session.repository';
 import { env } from '@/config/env.config';
 import { hashValue, generateSessionID } from '@/utils/auth.utils';
 
-async function createSession(user: User) {
+async function createSession(user: User, userAgent: string, ipAddress: string) {
     const sessionID = generateSessionID();
 
     const accessToken = signAccessToken({ sub: user.id, sessionID });
@@ -27,6 +27,8 @@ async function createSession(user: User) {
         sessionID,
         userID: user.id,
         token: tokenHash,
+        userAgent,
+        ipAddress,
         expiresAt,
     });
 

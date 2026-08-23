@@ -18,8 +18,11 @@ import ms from 'ms';
 import { hashValue } from '@/utils/auth.utils';
 import { AppError } from '@shared/src/types';
 import { env } from '@/config/env.config';
+import { LoginUserType, RegisterUserType } from '@/types/auth.types';
 
-async function register(email: string, password: string) {
+async function register(args: RegisterUserType) {
+    const { email, password, userAgent, ipAddress } = args;
+
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
         throw new AppError('Email already taken.', 400);
@@ -28,7 +31,11 @@ async function register(email: string, password: string) {
     const passwordHash = await hashPassword(password);
     const user = await createUser(email, passwordHash);
 
-    const { accessToken, refreshToken } = await createSession(user);
+    const { accessToken, refreshToken } = await createSession(
+        user,
+        userAgent,
+        ipAddress,
+    );
 
     return {
         accessToken,
@@ -36,7 +43,9 @@ async function register(email: string, password: string) {
     };
 }
 
-async function login(email: string, password: string) {
+async function login(args: LoginUserType) {
+    const { email, password, userAgent, ipAddress } = args;
+
     const user = await findUserByEmail(email);
     if (!user) {
         throw new AppError('Invalid credentials.', 401);
@@ -47,7 +56,11 @@ async function login(email: string, password: string) {
         throw new AppError('Invalid credentials.', 401);
     }
 
-    const { accessToken, refreshToken } = await createSession(user);
+    const { accessToken, refreshToken } = await createSession(
+        user,
+        userAgent,
+        ipAddress,
+    );
 
     return {
         accessToken,

@@ -30,7 +30,12 @@ model Session {
     userID String @map("user_id")
     token String @unique
     createdAt DateTime @default(now()) @map("created_at")
+    userAgent        String? @map("user_agent")
+    ipAddress        String? @map("ip_address")
+    isRevoked        Boolean   @default(false) @map("is_revoked")
+    isDeleted        Boolean   @default(false) @map("is_deleted")
     expiresAt DateTime @map("expires_at")
+    revokedAt DateTime? @map("revoked_at")
 
     // Relations
     user User @relation(fields: [userID], references: [id], onDelete: Cascade)

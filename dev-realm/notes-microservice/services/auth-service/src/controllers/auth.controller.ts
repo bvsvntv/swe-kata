@@ -7,11 +7,15 @@ import { REFRESH_TOKEN_COOKIE } from '@/constants';
 
 async function registerController(req: Request, res: Response) {
     const { email, password } = req.body;
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const ipAddress = req.ip || 'unknown';
 
-    const { accessToken, refreshToken } = await authService.register(
+    const { accessToken, refreshToken } = await authService.register({
         email,
         password,
-    );
+        userAgent,
+        ipAddress,
+    });
 
     setCookies(res, refreshToken);
 
@@ -24,11 +28,15 @@ async function registerController(req: Request, res: Response) {
 
 async function loginController(req: Request, res: Response) {
     const { email, password } = req.body;
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const ipAddress = req.ip || 'unknown';
 
-    const { accessToken, refreshToken } = await authService.login(
+    const { accessToken, refreshToken } = await authService.login({
         email,
         password,
-    );
+        userAgent,
+        ipAddress,
+    });
 
     setCookies(res, refreshToken);
 
