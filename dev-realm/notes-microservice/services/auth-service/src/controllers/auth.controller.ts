@@ -3,6 +3,7 @@ import * as authService from '@/services/auth.service';
 import { sendResponse } from '@shared/src/utils/appResponse.util';
 import { AppError } from '@shared/src/types';
 import { clearCookies, setCookies } from '@/utils/auth.utils';
+import { REFRESH_TOKEN_COOKIE } from '@/constants';
 
 async function registerController(req: Request, res: Response) {
     const { email, password } = req.body;
@@ -57,7 +58,7 @@ async function getProfileController(req: Request, res: Response) {
 }
 
 async function refreshTokensController(req: Request, res: Response) {
-    const refreshToken = req.cookies?.refreshToken;
+    const refreshToken = req.cookies?.[REFRESH_TOKEN_COOKIE];
 
     if (!refreshToken) {
         throw new AppError('Missing refresh token.', 401);

@@ -74,13 +74,13 @@ async function refreshTokens(refreshToken: string) {
         throw new AppError('Session not found.', 404);
     }
     if (session.expiresAt < new Date()) {
-        throw new AppError('Refresh refreshToken expired.', 401);
+        throw new AppError('Invalid refresh token.', 401);
     }
 
     const incomingRefreshToken = hashValue(refreshToken);
     const isIncomingRefreshTokenValid = incomingRefreshToken === session.token;
     if (!isIncomingRefreshTokenValid) {
-        throw new AppError('Invalid refresh refreshToken.', 401);
+        throw new AppError('Invalid refresh token.', 401);
     }
 
     const newAccessToken = signAccessToken({ sub: userID, sessionID });
@@ -96,7 +96,7 @@ async function refreshTokens(refreshToken: string) {
     }
     const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
 
-    const hashedToken = hashValue(refreshToken);
+    const hashedToken = hashValue(newRefreshToken);
     await updateSession({ sessionID, token: hashedToken, expiresAt });
 
     return {
