@@ -6,7 +6,8 @@
   "scripts": {
     "start:auth-svc": "npm --prefix services/auth-service run dev",
     "start:notes-svc": "npm --prefix services/notes-service run dev",
-    "start:user-svc": "npm --prefix services/user-service run dev"
+    "start:user-svc": "npm --prefix services/user-service run dev",
+    "start:api-gateway": "npm --prefix api-gateway run dev"
   },
   "keywords": [],
   "author": "",
