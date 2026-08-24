@@ -8,6 +8,8 @@ dotenv.config({
 const envSchema = z.object({
     SERVER_PORT: z.coerce.number(),
     SERVER_ENV: z.enum(['development', 'stage', 'production']),
+    LOG_LEVEL: z.string(),
+    LOG_DIRECTORY: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
