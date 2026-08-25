@@ -10,3 +10,5 @@ type UpdateNoteType = {
 };
 
 type PatchNoteType = Partial<UpdateNoteType>;
+
+export { CreateNoteType, UpdateNoteType, PatchNoteType };

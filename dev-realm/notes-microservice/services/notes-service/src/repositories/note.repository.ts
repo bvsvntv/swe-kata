@@ -1,4 +1,9 @@
 import prisma from '@/lib/prisma';
+import {
+    CreateNoteType,
+    UpdateNoteType,
+    PatchNoteType,
+} from '@/types/note.types';
 import { Note } from 'generated/prisma/client';
 
 async function createNote(args: CreateNoteType): Promise<Note> {
