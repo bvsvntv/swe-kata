@@ -9,15 +9,11 @@ import {
     findSessionByID,
     updateSession,
 } from '@/repositories/session.repository';
-import {
-    signAccessToken,
-    signRefreshToken,
-    verifyRefreshToken,
-} from '@/utils/jwt.util';
 import ms from 'ms';
 import { hashValue } from '@/utils/auth.utils';
 import { AppError } from '@shared/src/types';
 import { env } from '@/config/env.config';
+import { jwtUtils } from '@/lib/jwt';
 import { LoginUserType, RegisterUserType } from '@/types/auth.types';
 
 async function register(args: RegisterUserType) {
@@ -78,7 +74,7 @@ async function logout(id: string) {
 }
 
 async function refreshTokens(refreshToken: string) {
-    const payload = verifyRefreshToken(refreshToken);
+    const payload = jwtUtils.verifyRefreshToken(refreshToken);
     const { sessionID, sub: userID } = payload;
 
     const session = await findSessionByID(sessionID);
@@ -96,8 +92,11 @@ async function refreshTokens(refreshToken: string) {
         throw new AppError('Invalid refresh token.', 401);
     }
 
-    const newAccessToken = signAccessToken({ sub: userID, sessionID });
-    const newRefreshToken = signRefreshToken({ sub: userID, sessionID });
+    const newAccessToken = jwtUtils.signAccessToken({ sub: userID, sessionID });
+    const newRefreshToken = jwtUtils.signRefreshToken({
+        sub: userID,
+        sessionID,
+    });
 
     const refreshTokenExpiresIn = ms(
         env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
