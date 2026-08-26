@@ -5,9 +5,10 @@ import prisma from './lib/prisma';
 
 const PORT = env.SERVER_PORT;
 const ENVIRONMENT = env.SERVER_ENV;
+const SERVICE_NAME = env.SERVICE_NAME;
 
 const server = app.listen(PORT, () => {
-    logger.info(`Notes service listening at http://localhost:${PORT}/api/v1`);
+    logger.info(`${SERVICE_NAME} listening at http://localhost:${PORT}/api/v1`);
     logger.info(`Environment: ${ENVIRONMENT}`);
     logger.info(`Heartbeat: http://localhost:${PORT}/api/v1/heartbeat`);
 });
