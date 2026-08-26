@@ -4,6 +4,7 @@ import { createLogger, transports, format, Logger } from 'winston';
 const { combine, timestamp, printf, errors } = format;
 
 type LogConfig = {
+    serviceName: string;
     env: string;
     level: string;
     directory?: string;
@@ -17,11 +18,12 @@ export function createWinstonLogger(config: LogConfig): Logger {
     }
 
     return createLogger({
+        defaultMeta: { service: config.serviceName },
         format: combine(
             timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             format.json(),
-            printf(({ level, message, timestamp, stack }) => {
-                const text = `${timestamp} [${level.toUpperCase()}]: ${message}`;
+            printf(({ level, message, timestamp, stack, service }) => {
+                const text = `[${timestamp}] [${level.toUpperCase()}] [${service}]: ${message}`;
                 return stack ? text + '\n' + stack : text;
             }),
             errors({ stack: true }),
