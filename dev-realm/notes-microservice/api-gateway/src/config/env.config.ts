@@ -12,6 +12,9 @@ const envSchema = z.object({
     SERVER_ENV: z.enum(['development', 'stage', 'production']),
     LOG_LEVEL: z.string(),
     LOG_DIRECTORY: z.string(),
+    AUTH_SERVICE_URL: z.string(),
+    NOTES_SERVICE_URL: z.string(),
+    USER_SERVICE_URL: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
