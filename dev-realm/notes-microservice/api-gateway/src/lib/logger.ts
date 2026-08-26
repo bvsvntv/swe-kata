@@ -3,6 +3,7 @@ import { createWinstonLogger } from '@shared/src/utils/log.util';
 import { Logger } from 'winston';
 
 const logger: Logger = createWinstonLogger({
+    serviceName: env.SERVICE_NAME,
     level: env.LOG_LEVEL,
     env: env.SERVER_ENV,
     directory: env.LOG_DIRECTORY,
