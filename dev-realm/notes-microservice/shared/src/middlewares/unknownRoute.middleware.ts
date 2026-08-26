@@ -6,5 +6,5 @@ export function unknownRouteHandler(
     res: Response,
     next: NextFunction,
 ) {
-    next(new AppError(`Can't find ${req.originalUrl} in the server!`, 404));
+    next(new AppError(`Can't find requested resource in the server!`, 404));
 }
