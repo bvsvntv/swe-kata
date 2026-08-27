@@ -7,22 +7,22 @@ import { createProxyMiddleware, Options } from 'http-proxy-middleware';
 const serviceConfigs: ServiceConfigType[] = [
     {
         name: 'auth-service',
-        path: '/api/v1/auth/',
+        path: '/auth',
         url: env.AUTH_SERVICE_URL,
-        pathRewrite: { '^/api/v1/auth': '/api/v1/auth/' },
+        pathRewrite: { '^/auth': '/api/v1/auth' },
         timeout: 5000,
     },
     {
         name: 'user-service',
-        path: '/api/v1/user/',
+        path: '/users',
         url: env.USER_SERVICE_URL,
-        pathRewrite: { '^/api/v1/user': '/api/v1/user/' },
+        pathRewrite: { '^/users': '/api/v1/users' },
     },
     {
         name: 'notes-service',
-        path: '/api/v1/notes/',
+        path: '/notes',
         url: env.NOTES_SERVICE_URL,
-        pathRewrite: { '^/api/v1/notes': '/api/v1/notes/' },
+        pathRewrite: { '^/notes': '/api/v1/notes' },
     },
 ];
 
@@ -34,28 +34,31 @@ function createProxyOptions(service: ServiceConfigType): Options {
         timeout: service.timeout ?? 3000,
         logger: logger,
         on: {
-            error: handleProxyError,
-            // proxyReq: handleProxyRequest,
-            // proxyRes: handleProxyResponse,
+            error: (err: Error, req: any, res: any): void => {
+                logger.error(`Proxy error: ${err.message}`);
+
+                if (!res.headersSent) {
+                    res.status(503).end(
+                        JSON.stringify({
+                            success: false,
+                            message: 'Service unavailable.',
+                        }),
+                    );
+                }
+            },
+            proxyReq: (req: any, proxyReq: any): void => {
+                logger.info(
+                    `Proxying request: ${req.method} ${req.originalUrl} to ${service.url}`,
+                );
+            },
+            proxyRes: (req: any, proxyRes: any): void => {
+                logger.info(
+                    `Received response from ${service.url}: ${proxyRes.statusCode} for ${req.method} ${req.originalUrl}`,
+                );
+            },
         },
     };
 }
-
-function handleProxyError(err: Error, req: any, res: any): void {
-    logger.error(`Proxy error: ${err.message}`);
-
-    if (!res.headersSent) {
-        res.status(503).end(
-            JSON.stringify({
-                success: false,
-                message: 'Service unavailable.',
-            }),
-        );
-    }
-}
-
-// function handleProxyRequest(proxyReq: any, req: any): void {}
-// function handleProxyResponse(proxyRes: any, res: any): void {}
 
 function setupProxy(app: Application): void {
     serviceConfigs.forEach((service) => {
