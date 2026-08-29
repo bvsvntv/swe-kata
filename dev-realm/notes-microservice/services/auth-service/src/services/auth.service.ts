@@ -3,6 +3,7 @@ import {
     createUser,
     findUserByEmail,
     findUserByID,
+    revokeUserAllSessions,
 } from '@/repositories/auth.repository';
 import { createSession, deleteSession } from './session.service';
 import {
@@ -15,6 +16,13 @@ import { AppError } from '@shared/src/types';
 import { env } from '@/config/env.config';
 import { jwtUtils } from '@/lib/jwt';
 import { LoginUserType, RegisterUserType } from '@/types/auth.types';
+import {
+    acquireRefreshLock,
+    assertSessionIsValid,
+    logRefreshReuse,
+    logSuspiciousRefresh,
+    releaseRefreshLock,
+} from './refresh-protection.service';
 
 async function register(args: RegisterUserType) {
     const { email, password, userAgent, ipAddress } = args;
@@ -73,48 +81,78 @@ async function logout(id: string) {
     await deleteSession(id);
 }
 
-async function refreshTokens(refreshToken: string) {
+async function refreshSession(refreshToken: string, userAgent: string) {
     const payload = jwtUtils.verifyRefreshToken(refreshToken);
     const { sessionID, sub: userID } = payload;
 
-    const session = await findSessionByID(sessionID);
+    const lockToken = await acquireRefreshLock(sessionID);
+    try {
+        const session = await findSessionByID(sessionID);
 
-    if (!session) {
-        throw new AppError('Session not found.', 404);
-    }
-    if (session.expiresAt < new Date()) {
-        throw new AppError('Invalid refresh token.', 401);
-    }
+        if (!session) {
+            throw new AppError('Session not found.', 404);
+        }
 
-    const incomingRefreshToken = hashValue(refreshToken);
-    const isIncomingRefreshTokenValid = incomingRefreshToken === session.token;
-    if (!isIncomingRefreshTokenValid) {
-        throw new AppError('Invalid refresh token.', 401);
-    }
+        // Validate current session
+        assertSessionIsValid({
+            isRevoked: session.isRevoked,
+            isDeleted: session.isDeleted,
+            expiresAt: session.expiresAt,
+        });
 
-    const newAccessToken = jwtUtils.signAccessToken({ sub: userID, sessionID });
-    const newRefreshToken = jwtUtils.signRefreshToken({
-        sub: userID,
-        sessionID,
-    });
+        if (userAgent && session.userAgent && userAgent !== session.userAgent) {
+            logSuspiciousRefresh({
+                userID: session.userID,
+                sessionID: session.id,
+                previousUserAgent: session.userAgent,
+                currentUserAgent: userAgent,
+            });
+        }
 
-    const refreshTokenExpiresIn = ms(
-        env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
-    );
-    if (typeof refreshTokenExpiresIn !== 'number') {
-        throw new Error(
-            'Invalid configuration for refresh refreshToken expiration time.',
+        const incomingRefreshToken = hashValue(refreshToken);
+        const isIncomingRefreshTokenValid =
+            incomingRefreshToken === session.token;
+
+        if (!isIncomingRefreshTokenValid) {
+            logRefreshReuse({
+                userID: session.userID,
+                sessionID: session.id,
+            });
+
+            await revokeUserAllSessions(userID);
+
+            throw new AppError('Refresh token reuse detected.', 401);
+        }
+
+        const newAccessToken = jwtUtils.signAccessToken({
+            sub: userID,
+            sessionID,
+        });
+        const newRefreshToken = jwtUtils.signRefreshToken({
+            sub: userID,
+            sessionID,
+        });
+
+        const refreshTokenExpiresIn = ms(
+            env.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue,
         );
+        if (typeof refreshTokenExpiresIn !== 'number') {
+            throw new Error(
+                'Invalid configuration for refresh refreshToken expiration time.',
+            );
+        }
+        const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
+
+        const hashedToken = hashValue(newRefreshToken);
+        await updateSession({ sessionID, token: hashedToken, expiresAt });
+
+        return {
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+        };
+    } finally {
+        await releaseRefreshLock(sessionID, lockToken);
     }
-    const expiresAt = new Date(Date.now() + refreshTokenExpiresIn);
-
-    const hashedToken = hashValue(newRefreshToken);
-    await updateSession({ sessionID, token: hashedToken, expiresAt });
-
-    return {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-    };
 }
 
 async function getProfile(id: string) {
@@ -126,4 +164,4 @@ async function getProfile(id: string) {
     return user;
 }
 
-export { register, login, logout, refreshTokens, getProfile };
+export { register, login, logout, refreshSession, getProfile };

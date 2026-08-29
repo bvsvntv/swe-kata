@@ -28,4 +28,15 @@ async function createUser(email: string, password: string): Promise<User> {
     });
 }
 
-export { findUserByEmail, findUserByID, createUser };
+async function revokeUserAllSessions(userID: string) {
+    return await prisma.session.updateMany({
+        where: {
+            userID,
+        },
+        data: {
+            isRevoked: true,
+        },
+    });
+}
+
+export { findUserByEmail, findUserByID, createUser, revokeUserAllSessions };

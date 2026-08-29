@@ -18,6 +18,7 @@ const envSchema = z.object({
     REFRESH_TOKEN_EXPIRES_IN: z.string(),
     LOG_LEVEL: z.string(),
     LOG_DIRECTORY: z.string(),
+    REDIS_URL: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

@@ -72,8 +72,9 @@ async function refreshTokensController(req: Request, res: Response) {
         throw new AppError('Missing refresh token.', 401);
     }
 
+    const userAgent = req.headers['user-agent'] ?? 'unknown';
     const { accessToken, refreshToken: newRefreshToken } =
-        await authService.refreshTokens(refreshToken);
+        await authService.refreshSession(refreshToken, userAgent);
 
     setCookies(res, newRefreshToken);
 

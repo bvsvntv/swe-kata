@@ -2,6 +2,7 @@ import app from './app';
 import prisma from './lib/prisma';
 import { env } from './config/env.config';
 import { logger } from './lib/logger';
+import redis from './lib/redis';
 
 const PORT = env.SERVER_PORT;
 const ENVIRONMENT = env.SERVER_ENV;
@@ -22,6 +23,10 @@ async function gracefulShutdown(signal: string) {
         // Release db connection
         await prisma.$disconnect();
         logger.info('> Closing database connection.');
+
+        await redis.quit();
+        logger.info('> Closing redis connection.');
+
         process.exit(0);
     });
 }

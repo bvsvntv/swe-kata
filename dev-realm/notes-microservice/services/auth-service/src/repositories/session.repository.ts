@@ -31,6 +31,9 @@ async function findSessionByID(id: string) {
             token: true,
             expiresAt: true,
             userID: true,
+            isRevoked: true,
+            isDeleted: true,
+            userAgent: true,
         },
     });
 }
