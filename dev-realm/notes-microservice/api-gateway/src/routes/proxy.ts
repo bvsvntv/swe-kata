@@ -31,7 +31,7 @@ function createProxyOptions(service: ServiceConfigType): Options {
         target: service.url,
         changeOrigin: true,
         pathRewrite: service.pathRewrite,
-        timeout: service.timeout ?? 3000,
+        timeout: service.timeout ?? env.DEFAULT_TIMEOUT,
         logger: logger,
         on: {
             error: (err: Error, req: any, res: any): void => {

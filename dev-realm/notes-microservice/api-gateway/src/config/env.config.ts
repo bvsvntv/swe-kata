@@ -15,6 +15,7 @@ const envSchema = z.object({
     AUTH_SERVICE_URL: z.string(),
     NOTES_SERVICE_URL: z.string(),
     USER_SERVICE_URL: z.string(),
+    DEFAULT_TIMEOUT: z.coerce.number(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
