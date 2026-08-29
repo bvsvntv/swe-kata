@@ -1,4 +1,4 @@
-import { env } from '@/configs/env.config';
+import { env } from '@/config/env.config';
 import { createJwtUtils } from '@shared/src/utils/jwt.util';
 
 const jwtUtils = createJwtUtils({

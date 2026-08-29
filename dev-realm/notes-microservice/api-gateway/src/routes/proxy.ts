@@ -1,7 +1,7 @@
 import { env } from '@/config/env.config';
 import { logger } from '@/lib/logger';
 import { ServiceConfigType } from '@/types';
-import { Application } from 'express';
+import { Router } from 'express';
 import { createProxyMiddleware, Options } from 'http-proxy-middleware';
 
 const serviceConfigs: ServiceConfigType[] = [
@@ -60,7 +60,7 @@ function createProxyOptions(service: ServiceConfigType): Options {
     };
 }
 
-function setupProxy(app: Application): void {
+function setupProxy(app: Router): void {
     serviceConfigs.forEach((service) => {
         const proxyOptions = createProxyOptions(service);
         app.use(service.path, createProxyMiddleware(proxyOptions));

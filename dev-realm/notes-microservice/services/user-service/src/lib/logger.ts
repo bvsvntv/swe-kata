@@ -1,4 +1,4 @@
-import { env } from '@/configs/env.config';
+import { env } from '@/config/env.config';
 import { createWinstonLogger } from '@shared/src/utils/log.util';
 import { Logger } from 'winston';
 
