@@ -6,7 +6,7 @@ import redis from './lib/redis';
 
 const PORT = env.SERVER_PORT;
 const ENVIRONMENT = env.SERVER_ENV;
-const SERVICE_NAME = env.SERVICE_NAME;
+const SERVICE_NAME = env.SERVICE_NAME || 'auth-service';
 
 const server = app.listen(PORT, () => {
     logger.info(`${SERVICE_NAME} listening at http://localhost:${PORT}/api/v1`);
@@ -16,7 +16,7 @@ const server = app.listen(PORT, () => {
 
 async function gracefulShutdown(signal: string) {
     logger.info(
-        `\n> ${signal} received. Shutting down auth-service gracefully...`,
+        `\n> ${signal} received. Shutting down ${SERVICE_NAME} gracefully...`,
     );
 
     server.close(async () => {

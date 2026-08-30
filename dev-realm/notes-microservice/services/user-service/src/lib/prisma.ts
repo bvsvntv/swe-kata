@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
 import { env } from '@/config/env.config';
+import { logger } from './logger';
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
@@ -16,7 +17,7 @@ const prisma = new PrismaClient({
 
 // handle graceful shutdown
 process.on('beforeExit', async () => {
-    console.log('> Closing database connection.');
+    logger.info('> Closing database connection.');
     await prisma.$disconnect();
 });
 
