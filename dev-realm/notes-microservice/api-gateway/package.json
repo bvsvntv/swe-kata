@@ -17,6 +17,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@prometheus-io/client": "^0.16.1",
     "@types/cors": "^2.8.19",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
