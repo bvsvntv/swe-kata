@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { createLogger, transports, format, Logger } from 'winston';
 const { combine, timestamp, printf, errors } = format;
+import LokiTransport from 'winston-loki';
 
 type LogConfig = {
     serviceName: string;
@@ -37,6 +38,9 @@ export function createWinstonLogger(config: LogConfig): Logger {
             new transports.File({
                 filename: path.join(logDir, 'server-error.log'),
                 level: 'error', // Log only errors to this file
+            }),
+            new LokiTransport({
+                host: 'http://localhost:13100',
             }),
         ],
         exceptionHandlers: [
