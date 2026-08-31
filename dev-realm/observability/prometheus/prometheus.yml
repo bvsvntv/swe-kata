@@ -1,8 +1,18 @@
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 5s
+  evaluation_interval: 5s
 
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: 'api-gateway'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['192.168.18.167:18000']
+
+  - job_name: 'auth-svc'
+    static_configs:
+      - targets: ['192.168.18.167:18001']
+  - job_name: 'users-svc'
+    static_configs:
+      - targets: ['192.168.18.167:18002']
+  - job_name: 'notes-svc'
+    static_configs:
+      - targets: ['192.168.18.167:18003']
