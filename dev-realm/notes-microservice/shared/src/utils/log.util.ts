@@ -19,26 +19,6 @@ export function createWinstonLogger(config: LogConfig): Logger {
         fs.mkdirSync(logDir);
     }
 
-    const logTranports = [
-        new transports.Console(),
-        new transports.File({
-            filename: path.join(logDir, 'server.log'),
-            level: config.level ?? 'info',
-        }),
-        new transports.File({
-            filename: path.join(logDir, 'server-error.log'),
-            level: 'error', // Log only errors to this file
-        }),
-    ];
-
-    if (config.lokiTransportHost) {
-        logTranports.push(
-            new LokiTransport({
-                host: '',
-            }),
-        );
-    }
-
     return createLogger({
         defaultMeta: { service: config.serviceName },
         format: combine(
@@ -50,7 +30,24 @@ export function createWinstonLogger(config: LogConfig): Logger {
             }),
             errors({ stack: true }),
         ),
-        transports: logTranports,
+        transports: [
+            new transports.Console(),
+            new transports.File({
+                filename: path.join(logDir, 'server.log'),
+                level: config.level ?? 'info',
+            }),
+            new transports.File({
+                filename: path.join(logDir, 'server-error.log'),
+                level: 'error', // Log only errors to this file
+            }),
+            new LokiTransport({
+                host: config.lokiTransportHost ?? 'http://localhost:13100',
+                labels: {
+                    service: config.serviceName,
+                    env: config.env,
+                },
+            }),
+        ],
         exceptionHandlers: [
             new transports.File({
                 filename: path.join(logDir, 'server-error.log'),
