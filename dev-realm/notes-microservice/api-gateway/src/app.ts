@@ -22,8 +22,8 @@ client.collectDefaultMetrics({
 
 // Metrics endpoint - Prometheus scrapes this URL
 app.get('/metrics', async (_req: Request, res: Response) => {
-    res.set('Content-Type', client.register.contentType); // Required content type
-    res.end(await client.register.metrics()); // Return all registered metrics
+    res.set('Content-Type', register.contentType); // Required content type
+    res.end(await register.metrics()); // Return all registered metrics
 });
 
 app.use(express.json({ limit: '10kb' }));
