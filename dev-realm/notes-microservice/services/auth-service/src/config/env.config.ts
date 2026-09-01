@@ -19,6 +19,7 @@ const envSchema = z.object({
     LOG_LEVEL: z.string(),
     LOG_DIRECTORY: z.string(),
     REDIS_URL: z.string(),
+    LOKI_URL: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

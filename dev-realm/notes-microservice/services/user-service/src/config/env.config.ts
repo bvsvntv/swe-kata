@@ -14,6 +14,7 @@ const envSchema = z.object({
     ACCESS_TOKEN_SECRET: z.string(),
     LOG_LEVEL: z.string(),
     LOG_DIRECTORY: z.string(),
+    LOKI_URL: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

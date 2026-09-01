@@ -7,6 +7,7 @@ const logger: Logger = createWinstonLogger({
     level: env.LOG_LEVEL,
     env: env.SERVER_ENV,
     directory: env.LOG_DIRECTORY,
+    lokiTransportHost: env.LOKI_URL,
 });
 
 export { logger };
