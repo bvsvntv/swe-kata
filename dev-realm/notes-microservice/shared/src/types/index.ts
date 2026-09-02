@@ -22,4 +22,6 @@ class AppError extends Error {
     }
 }
 
-export { ApiResponse, AppError };
+type DBLabels = Record<'service' | 'model' | 'operation', string>;
+
+export { ApiResponse, AppError, DBLabels };
