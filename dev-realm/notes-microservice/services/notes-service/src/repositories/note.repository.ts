@@ -64,7 +64,7 @@ async function updateNote(id: string, args: UpdateNoteType) {
 async function patchNote(id: string, args: PatchNoteType) {
     const { title, content } = args;
 
-    return db.measure('note', 'patch', () =>
+    return db.measure('note', 'update', () =>
         prisma.note.update({
             where: { id },
             data: {
@@ -76,7 +76,7 @@ async function patchNote(id: string, args: PatchNoteType) {
 }
 
 async function deleteNote(id: string) {
-    db.measure('note', 'delete', () =>
+    await db.measure('note', 'delete', () =>
         prisma.note.delete({
             where: { id },
         }),

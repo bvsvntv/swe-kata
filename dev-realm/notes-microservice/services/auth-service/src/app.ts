@@ -8,6 +8,7 @@ import { unknownRouteHandler } from '@shared/src/middlewares/unknownRoute.middle
 import { requestLogger } from './middlewares/requestLogger.middleware';
 import { metricRegistry } from './lib/metrics';
 import { createMetricsMiddleware } from '@shared/src/middlewares/metrics.middleware';
+import { env } from './config/env.config';
 
 const app = express();
 
@@ -33,7 +34,9 @@ app.use(cookieParser());
 
 app.use(requestLogger);
 
-app.use(createMetricsMiddleware(metricRegistry, 'api-gateway'));
+app.use(
+    createMetricsMiddleware(metricRegistry, env.SERVICE_NAME ?? 'auth-service'),
+);
 app.use('/api/v1', v1Routes);
 
 // Unknown route handler

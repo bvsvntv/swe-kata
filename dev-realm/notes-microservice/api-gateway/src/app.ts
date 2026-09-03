@@ -8,6 +8,7 @@ import { errorHandler } from '@shared/src/middlewares/error.middleware';
 import gatewayRoutes from './routes';
 import { metricRegistry } from './lib/metrics';
 import { createMetricsMiddleware } from '@shared/src/middlewares/metrics.middleware';
+import { env } from './config/env.config';
 
 const app = express();
 
@@ -33,7 +34,9 @@ app.use(helmet());
 app.use(cors());
 app.use(rateLimiter);
 
-app.use(createMetricsMiddleware(metricRegistry, 'api-gateway'));
+app.use(
+    createMetricsMiddleware(metricRegistry, env.SERVICE_NAME ?? 'api-gateway'),
+);
 app.use(gatewayRoutes);
 
 app.use(unknownRouteHandler);
