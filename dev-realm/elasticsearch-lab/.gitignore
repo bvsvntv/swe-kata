@@ -37,3 +37,5 @@ next-env.d.ts
 
 # Sample data
 products-2000000.csv
+
+/generated/prisma
