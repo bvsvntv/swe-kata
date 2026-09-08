@@ -73,7 +73,7 @@ async function main() {
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
   );
 
-  CREATE UNIQUE INDEX IF NOT EXISTS "products_ean_key"
+  CREATE INDEX IF NOT EXISTS "products_ean_key"
     ON "products"("ean");
 
   CREATE INDEX IF NOT EXISTS "products_name_idx"

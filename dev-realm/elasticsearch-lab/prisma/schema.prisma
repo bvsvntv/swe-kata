@@ -13,8 +13,8 @@ datasource db {
 }
 
 model product {
-    id              Int  @id @default(autoincrement())
-    internalId      Int @unique @map("internal_id")
+    id              Int @id @default(autoincrement())
+    internalId      Int @map("internal_id")
     name            String
     description     String
     brand           String
@@ -22,7 +22,7 @@ model product {
     price           Decimal @db.Decimal(10,2)
     currency        String
     stock           Int
-    ean             String @unique
+    ean             String
     color           String
     size            String
     availability    String

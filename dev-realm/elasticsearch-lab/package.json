@@ -11,6 +11,8 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "prisma:init": "bunx prisma migrate dev --name init",
+    "prisma:migrate": "bunx prisma migrate dev",
+    "prisma:migrate:reset": "bunx prisma migrate reset",
     "prisma:generate": "bunx prisma generate",
     "pg:import-products": "bun run ./scripts/import-products.ts"
   },
