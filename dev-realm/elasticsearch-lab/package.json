@@ -14,7 +14,7 @@
     "prisma:migrate": "bunx prisma migrate dev",
     "prisma:migrate:reset": "bunx prisma migrate reset",
     "prisma:generate": "bunx prisma generate",
-    "pg:import-products": "bun run ./scripts/import-products.ts"
+    "pg:import-products": "bun run ./scripts/pg-import-products.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
