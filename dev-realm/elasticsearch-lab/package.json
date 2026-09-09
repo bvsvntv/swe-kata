@@ -14,10 +14,12 @@
     "prisma:migrate": "bunx prisma migrate dev",
     "prisma:migrate:reset": "bunx prisma migrate reset",
     "prisma:generate": "bunx prisma generate",
-    "pg:import-products": "bun run ./scripts/pg-import-products.ts"
+    "pg:import-products": "bun run ./scripts/pg-import-products.ts",
+    "es:import-products": "bun run ./scripts/es-import-products.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@elastic/elasticsearch": "^9.5.1",
     "@hugeicons/core-free-icons": "^4.2.3",
     "@hugeicons/react": "^1.1.9",
     "@prisma/adapter-pg": "^7.10.0",
