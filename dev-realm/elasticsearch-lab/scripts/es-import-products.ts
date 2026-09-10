@@ -157,6 +157,9 @@ async function main() {
       e
     )
     process.exit(1)
+  } finally {
+    await esClient.close()
+    console.log("Elasticsearch client closed.")
   }
 }
 

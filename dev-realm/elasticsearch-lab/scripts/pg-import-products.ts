@@ -108,7 +108,7 @@ async function main() {
       }))
 
     if (validRecords.length > 0) {
-      const BATCH_SIZE = 1000
+      const BATCH_SIZE = 10000
       let totalInserted = 0
 
       for (let i = 0; i < validRecords.length; i += BATCH_SIZE) {
@@ -128,6 +128,9 @@ async function main() {
   } catch (e) {
     console.log("ERROR: Failed to import records into table. Error: ", e)
     process.exit(1)
+  } finally {
+    await prisma.$disconnect()
+    console.log("Prisma client disconnected.")
   }
 }
 
