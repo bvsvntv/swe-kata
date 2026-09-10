@@ -104,6 +104,34 @@ async function main() {
 
     if (validRecords.length > 0) {
       console.log(`${validRecords.length} records are valid.`)
+      const bulkBody = validRecords.flatMap((record) => [
+        {
+          index: {
+            _index: ELASTICSEARCH_INDEX_NAME,
+            _id: record.internalId,
+          },
+        },
+        record,
+      ])
+
+      const bulkResponse = await esClient.bulk({
+        refresh: true,
+        body: bulkBody,
+      })
+
+      if (bulkResponse.errors) {
+        console.error("Some records failed to index while bulk indexing.")
+
+        for (const item of bulkResponse.items) {
+          if (item.index && item.index.error) {
+            console.error(
+              `Error indexing document ID ${item.index._id}: ${JSON.stringify(item.index.error)}`
+            )
+          }
+        }
+      } else {
+        console.log(`${validRecords.length} records imported successfully.`)
+      }
     }
   } catch (e) {
     console.log(
