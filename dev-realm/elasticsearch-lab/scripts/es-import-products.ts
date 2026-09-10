@@ -6,6 +6,8 @@ import { readCSV } from "@/utils/read-csv.util"
 dotenv.config({ path: "./.env" })
 
 async function main() {
+  const ELASTICSEARCH_INDEX_NAME = "products"
+
   const esNodeURL = process.env.ELASTICSEARCH_NODE_URL
   if (!esNodeURL) {
     console.log("ERROR: ELASTICSEARCH_NODE_URL missing from '.env' file.")
@@ -26,6 +28,49 @@ async function main() {
 
   // Import records into elasticsearch index
   try {
+    const esIndexExists = await esClient.indices.exists({
+      index: ELASTICSEARCH_INDEX_NAME,
+    })
+    if (esIndexExists) {
+      console.log(`Elasticsearch index '${ELASTICSEARCH_INDEX_NAME}' exists.`)
+      await esClient.indices.delete({ index: ELASTICSEARCH_INDEX_NAME })
+      console.log(`Elasticsearch index '${ELASTICSEARCH_INDEX_NAME}' deleted.`)
+    }
+
+    await esClient.indices.create({
+      index: ELASTICSEARCH_INDEX_NAME,
+      settings: {
+        number_of_shards: 1,
+        number_of_replicas: 1,
+      },
+      mappings: {
+        properties: {
+          id: { type: "integer" },
+          internalId: { type: "integer" },
+
+          name: {
+            type: "text",
+            fields: {
+              keyword: { type: "keyword", ignore_above: 256 },
+            },
+          },
+          description: { type: "text" },
+          brand: { type: "keyword" },
+          category: { type: "keyword" },
+          color: { type: "keyword" },
+          size: { type: "keyword" },
+          availability: { type: "keyword" },
+          price: { type: "scaled_float", scaling_factor: 100 },
+          currency: { type: "keyword" },
+          stock: { type: "integer" },
+          ean: { type: "keyword" },
+        },
+      },
+    })
+    console.log(
+      `New elasticsearch index '${ELASTICSEARCH_INDEX_NAME}' created.`
+    )
+
     const validRecords = records
       .filter(
         (record: any) =>
