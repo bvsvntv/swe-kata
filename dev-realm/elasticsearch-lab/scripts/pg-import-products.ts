@@ -111,7 +111,7 @@ async function main() {
       const BATCH_SIZE = 1000
       let totalInserted = 0
 
-      for (let i = 0; i <= validRecords.length; i += BATCH_SIZE) {
+      for (let i = 0; i < validRecords.length; i += BATCH_SIZE) {
         const batch = validRecords.slice(i, i + BATCH_SIZE)
         const result = await prisma.product.createMany({
           data: batch,

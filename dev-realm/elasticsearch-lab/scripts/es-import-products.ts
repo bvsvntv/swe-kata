@@ -41,7 +41,7 @@ async function main() {
       index: ELASTICSEARCH_INDEX_NAME,
       settings: {
         number_of_shards: 1,
-        number_of_replicas: 1,
+        number_of_replicas: 0,
       },
       mappings: {
         properties: {
@@ -103,35 +103,53 @@ async function main() {
       }))
 
     if (validRecords.length > 0) {
-      console.log(`${validRecords.length} records are valid.`)
-      const bulkBody = validRecords.flatMap((record) => [
-        {
-          index: {
-            _index: ELASTICSEARCH_INDEX_NAME,
-            _id: record.internalId,
+      console.log(
+        `${validRecords.length} records are valid. Indexing them in elasticsearch.`
+      )
+      const BATCH_SIZE = 10000
+      let totalInserted = 0
+
+      for (let i = 0; i < validRecords.length; i += BATCH_SIZE) {
+        const batch = validRecords.slice(i, i + BATCH_SIZE)
+        const bulkBody = batch.flatMap((record) => [
+          {
+            index: {
+              _index: ELASTICSEARCH_INDEX_NAME,
+              _id: record.internalId,
+            },
           },
-        },
-        record,
-      ])
+          record,
+        ])
 
-      const bulkResponse = await esClient.bulk({
-        refresh: true,
-        body: bulkBody,
-      })
+        const bulkResponse = await esClient.bulk({
+          refresh: false,
+          body: bulkBody,
+        })
 
-      if (bulkResponse.errors) {
-        console.error("Some records failed to index while bulk indexing.")
+        if (bulkResponse.errors) {
+          console.error("Some records failed to index while bulk indexing.")
 
-        for (const item of bulkResponse.items) {
-          if (item.index && item.index.error) {
-            console.error(
-              `Error indexing document ID ${item.index._id}: ${JSON.stringify(item.index.error)}`
-            )
+          for (const item of bulkResponse.items) {
+            if (item.index && item.index.error) {
+              console.error(
+                `Error indexing document ID ${item.index._id}: ${JSON.stringify(item.index.error)}`
+              )
+            }
           }
+        } else {
+          console.log(`${batch.length} records imported successfully.`)
         }
-      } else {
-        console.log(`${validRecords.length} records imported successfully.`)
+
+        totalInserted += bulkResponse.items.length
+        console.log(
+          `Indexed ${totalInserted} / ${validRecords.length} products`
+        )
       }
+
+      // Only refresh index after full insert
+      await esClient.indices.refresh({
+        index: ELASTICSEARCH_INDEX_NAME,
+      })
     }
   } catch (e) {
     console.log(
