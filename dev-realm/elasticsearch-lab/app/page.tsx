@@ -6,11 +6,10 @@ import {
   EmptyMedia,
   EmptyTitle,
   EmptyDescription,
-  EmptyContent,
 } from "@/components/ui/empty"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { SearchAlertIcon } from "@hugeicons/core-free-icons"
+import { SearchCodeIcon } from "@hugeicons/core-free-icons"
 
 export default function Page() {
   return (
@@ -32,7 +31,7 @@ export default function Page() {
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <HugeiconsIcon
-                  icon={SearchAlertIcon}
+                  icon={SearchCodeIcon}
                   size={24}
                   color="currentColor"
                   strokeWidth={1.5}
