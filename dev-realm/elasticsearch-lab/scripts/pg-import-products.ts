@@ -1,9 +1,7 @@
-import fs from "node:fs"
 import dotenv from "dotenv"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { PrismaClient } from "@/generated/prisma/client"
-import path from "node:path"
-import { parse } from "csv-parse/sync"
+import { readCSV } from "@/utils/read-csv.util"
 
 dotenv.config({ path: "./.env" })
 
@@ -26,28 +24,7 @@ async function main() {
     process.exit(1)
   }
 
-  // read csv
-  let records
-  try {
-    const productsFilePath = path.join(process.cwd(), "products-2000000.csv")
-    if (!fs.existsSync(productsFilePath)) {
-      console.log(
-        `ERROR: CSV file not found at ${productsFilePath}. Make sure the path is correct relative to the project root`
-      )
-      process.exit(1)
-    }
-
-    const fileContent = fs.readFileSync(productsFilePath, { encoding: "utf-8" })
-    records = parse(fileContent, {
-      columns: true,
-      skip_empty_lines: true,
-    })
-
-    console.log(`Read ${records.length} records from CSV.`)
-  } catch (e) {
-    console.log("ERROR: Failed to read or parse csv file. Error: ", e)
-    process.exit(1)
-  }
+  const records = readCSV("products-2000000.csv")
 
   // Import records into table
   try {
