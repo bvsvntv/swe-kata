@@ -1,6 +1,10 @@
 "use client"
 
+import { useState } from "react"
+
 export default function Page() {
+  const [text, setText] = useState("")
+
   async function start() {
     const response = await fetch("/api/stream")
 
@@ -11,13 +15,21 @@ export default function Page() {
       const { value, done } = await reader.read()
       if (done) break
 
-      console.log("stream result: ", decoder.decode(value))
+      setText(decoder.decode(value))
     }
   }
 
   return (
-    <button onClick={start} className="m-4 rounded-md bg-gray-500 p-2">
-      Start streaming
-    </button>
+    <div className="m-4">
+      <button onClick={start} className="rounded-md bg-gray-500 p-2">
+        Start streaming
+      </button>
+
+      {text ? (
+        <p className="mt-4 text-gray-500">{text}</p>
+      ) : (
+        <p>Not streaming.</p>
+      )}
+    </div>
   )
 }

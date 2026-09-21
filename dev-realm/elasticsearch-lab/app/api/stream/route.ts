@@ -10,7 +10,7 @@ export async function GET() {
         for (let i = 0; i <= 10; i++) {
           controller.enqueue(encoder.encode(`Processing step: ${i}\n`))
 
-          await sleep(i * 1000)
+          await sleep(1000)
         }
 
         controller.close()
