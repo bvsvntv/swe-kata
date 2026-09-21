@@ -1,50 +1,23 @@
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Button } from "@/components/ui/button"
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyDescription,
-} from "@/components/ui/empty"
-import { Field } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { SearchCodeIcon } from "@hugeicons/core-free-icons"
+"use client"
 
 export default function Page() {
+  async function start() {
+    const response = await fetch("/api/stream")
+
+    const reader = response.body!.getReader()
+    const decoder = new TextDecoder()
+
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+
+      console.log("stream result: ", decoder.decode(value))
+    }
+  }
+
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="mx-auto flex max-w-7xl min-w-md flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">
-            Text search in Database V/S Elastisearch
-          </h1>
-
-          <Field className="mt-4" orientation="horizontal">
-            <Input type="search" placeholder="Search..." />
-            <Button>Search</Button>
-          </Field>
-        </div>
-
-        <div>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <HugeiconsIcon
-                  icon={SearchCodeIcon}
-                  size={24}
-                  color="currentColor"
-                  strokeWidth={1.5}
-                />
-              </EmptyMedia>
-              <EmptyTitle>Waiting for search</EmptyTitle>
-              <EmptyDescription>
-                Enter a search term and click "Search" to see results.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </div>
-      </div>
-    </div>
+    <button onClick={start} className="m-4 rounded-md bg-gray-500 p-2">
+      Start streaming
+    </button>
   )
 }
