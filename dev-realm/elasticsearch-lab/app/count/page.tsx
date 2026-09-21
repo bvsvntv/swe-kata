@@ -10,11 +10,19 @@ export default function Page() {
     const reader = response?.body!.getReader()
     const decoder = new TextDecoder()
 
+    let buffer = ""
     while (true) {
       const { value, done } = await reader.read()
       if (done) break
 
-      setCount(Number(decoder.decode(value)))
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split("\n")
+      buffer = lines.pop() ?? ""
+
+      lines.forEach((line) => {
+        const result = JSON.parse(line)
+        setCount(result.count)
+      })
     }
   }
 
