@@ -2,6 +2,7 @@ import { Client } from "@elastic/elasticsearch"
 import { HttpConnection } from "@elastic/transport"
 import { Product, SearchResult } from "@/app/types"
 import postgres from "postgres"
+import { NextRequest } from "next/server"
 
 const ELASTICSEARCH_INDEX_NAME = "products"
 
@@ -57,6 +58,7 @@ async function searchElastic(term: string): Promise<SearchResult> {
   try {
     const result = await esClient.search({
       index: ELASTICSEARCH_INDEX_NAME,
+      size: 50,
       query: {
         query_string: {
           query: `*${term.toLowerCase()}*`,
@@ -90,7 +92,22 @@ async function searchElastic(term: string): Promise<SearchResult> {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl
+
+  const query = searchParams.get("q")
+  if (typeof query !== "string" || query.trim() === "") {
+    return new Response(
+      JSON.stringify({ error: "Search query is required." }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+  }
+
   const encoder = new TextEncoder()
   const searches = [searchPostgres, searchElastic]
 
@@ -99,7 +116,7 @@ export async function GET() {
       try {
         await Promise.all(
           searches.map(async (search) => {
-            const result = await search("ball")
+            const result = await search(query)
             controller.enqueue(encoder.encode(JSON.stringify(result) + "\n"))
           })
         )

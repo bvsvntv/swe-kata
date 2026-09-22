@@ -10,19 +10,21 @@ export default function ResultSection({
 }) {
   return (
     <section>
-      <h3 className="font-semibold">{title}</h3>
+      <h3 className="mt-4 font-semibold">{title}</h3>
 
-      <div className="">
+      <div className="mt-2">
         {searchResult ? (
-          <div>
+          <div className="mt-2">
             {searchResult.error ? (
               <p className="text-sm text-red-500">{searchResult.error}</p>
             ) : (
               <ProductList products={searchResult.products} />
             )}
 
-            <p>latency: {searchResult.latency}ms</p>
-            <p>count: {searchResult.count}</p>
+            <div className="mt-2 flex justify-between">
+              <p className="text-xs">Latency: {searchResult.latency}ms</p>
+              <p className="text-xs">Found: {searchResult.count}</p>
+            </div>
           </div>
         ) : (
           <p className="text-gray-500">Waiting for search.</p>

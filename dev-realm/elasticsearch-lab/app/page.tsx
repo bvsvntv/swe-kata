@@ -1,11 +1,19 @@
 "use client"
 
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Search01Icon } from "@hugeicons/core-free-icons"
 import { useState } from "react"
 import { SearchResult } from "./types"
 import ResultSection from "./ui/result-section"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 
 export default function Page() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [query, setQuery] = useState<string>("")
 
   const pgResults = searchResults.find(
     (product: SearchResult) => product.source === "PostgreSQL (ILIKE)"
@@ -16,7 +24,11 @@ export default function Page() {
   )
 
   async function handleSearch() {
-    const response = await fetch("/api/products")
+    if (!query.trim()) return
+
+    setSearchResults([])
+
+    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`)
 
     const reader = response?.body!.getReader()
     const decoder = new TextDecoder()
@@ -48,21 +60,42 @@ export default function Page() {
   }
 
   return (
-    <div className="m-4 mx-auto max-w-5xl">
-      <button onClick={handleSearch} className="rounded bg-gray-700 p-2">
-        search products
-      </button>
-
-      <div className="mt-6 flex justify-between">
-        <ResultSection
-          title="PostgreSQL Search"
-          searchResult={pgResults as SearchResult}
+    <div className="m-8 mx-auto max-w-5xl">
+      <InputGroup className="max-w-5xl">
+        <InputGroupInput
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch()
+            }
+          }}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search..."
         />
+        <InputGroupAddon>
+          <HugeiconsIcon
+            icon={Search01Icon}
+            size={24}
+            color="currentColor"
+            onClick={handleSearch}
+            strokeWidth={1.5}
+          />
+        </InputGroupAddon>
+      </InputGroup>
 
-        <ResultSection
-          title="Elasticsearch"
-          searchResult={esResults as SearchResult}
-        />
+      <div className="flex gap-4">
+        <div className="min-w-0 flex-1">
+          <ResultSection
+            title="PostgreSQL Search"
+            searchResult={pgResults as SearchResult}
+          />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <ResultSection
+            title="Elasticsearch"
+            searchResult={esResults as SearchResult}
+          />
+        </div>
       </div>
     </div>
   )
