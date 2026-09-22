@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { SearchResult } from "./types"
-import ProductList from "./ui/product-list"
+import ResultSection from "./ui/result-section"
 
 export default function Page() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
@@ -54,47 +54,15 @@ export default function Page() {
       </button>
 
       <div className="mt-6 flex justify-between">
-        <section>
-          <h3 className="font-semibold">PostgreSQL Search</h3>
+        <ResultSection
+          title="PostgreSQL Search"
+          searchResult={pgResults as SearchResult}
+        />
 
-          <div className="">
-            {pgResults ? (
-              <div>
-                {pgResults.error ? (
-                  <p className="text-sm text-red-500">{pgResults.error}</p>
-                ) : (
-                  <ProductList products={pgResults.products} />
-                )}
-
-                <p>latency: {pgResults.latency}ms</p>
-                <p>count: {pgResults.count}</p>
-              </div>
-            ) : (
-              <p className="text-gray-500">Waiting for search.</p>
-            )}
-          </div>
-        </section>
-
-        <section>
-          <h3 className="font-semibold">Elasticsearch</h3>
-
-          <div className="">
-            {esResults ? (
-              <div>
-                {esResults.error ? (
-                  <p className="text-sm text-red-500">{esResults.error}</p>
-                ) : (
-                  <ProductList products={esResults.products} />
-                )}
-
-                <p>latency: {esResults.latency}ms</p>
-                <p>count: {esResults.count}</p>
-              </div>
-            ) : (
-              <p className="text-gray-500">Waiting for search.</p>
-            )}
-          </div>
-        </section>
+        <ResultSection
+          title="Elasticsearch"
+          searchResult={esResults as SearchResult}
+        />
       </div>
     </div>
   )
