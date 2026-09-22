@@ -76,8 +76,6 @@ export async function GET() {
         controller.close()
       } catch (error) {
         controller.error(error)
-      } finally {
-        controller.close()
       }
     },
   })
