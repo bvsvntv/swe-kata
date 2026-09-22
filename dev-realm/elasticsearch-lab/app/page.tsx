@@ -35,8 +35,6 @@ export default function Page() {
 
         const result = JSON.parse(line) as SearchResult
         setSearchResults((prev) => [...prev, result])
-
-        console.log(result)
       }
 
       // Flush TextDecoder

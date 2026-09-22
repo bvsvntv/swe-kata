@@ -1,9 +1,17 @@
+import { Client } from "@elastic/elasticsearch"
+import { HttpConnection } from "@elastic/transport"
 import { Product, SearchResult } from "@/app/types"
 import postgres from "postgres"
 
-const roundOff = (ms: number) => Number.parseFloat(ms.toFixed(2))
+const ELASTICSEARCH_INDEX_NAME = "products"
 
 const sql = postgres(process.env.POSTGRES_URL!, { max: 1 })
+const esClient = new Client({
+  node: process.env.ELASTICSEARCH_NODE_URL!,
+  Connection: HttpConnection,
+})
+
+const roundOff = (ms: number) => Number.parseFloat(ms.toFixed(2))
 
 async function searchPostgres(term: string): Promise<SearchResult> {
   const source = "PostgreSQL (ILIKE)"
@@ -47,8 +55,30 @@ async function searchElastic(term: string): Promise<SearchResult> {
   const start = performance.now()
 
   try {
-    // TODO: call Elasticsearch here and map hits to Product-shaped objects
-    throw new Error("Not implemented")
+    const result = await esClient.search({
+      index: ELASTICSEARCH_INDEX_NAME,
+      query: {
+        query_string: {
+          query: `*${term.toLowerCase()}*`,
+          fields: ["name", "brand", "category", "description", "color", "size"],
+          default_operator: "OR",
+          analyze_wildcard: true,
+        },
+      },
+    })
+
+    const products: Product[] = result.hits.hits.map((hit) => ({
+      ...(hit._source as Product),
+      id: Number(hit._id),
+    }))
+
+    return {
+      source,
+      products,
+      latency: roundOff(performance.now() - start),
+      count: products.length,
+      error: null,
+    }
   } catch (error: any) {
     return {
       source,
