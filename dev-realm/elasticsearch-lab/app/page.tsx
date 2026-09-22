@@ -1,35 +1,31 @@
 "use client"
 
-import { useState } from "react"
-
 export default function Page() {
-  const [text, setText] = useState("")
+  async function handleSearch() {
+    const response = await fetch("/api/products")
 
-  async function start() {
-    const response = await fetch("/api/stream")
-
-    const reader = response.body!.getReader()
+    const reader = response?.body!.getReader()
     const decoder = new TextDecoder()
 
+    let buffer = ""
     while (true) {
       const { value, done } = await reader.read()
       if (done) break
 
-      setText(decoder.decode(value))
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split("\n")
+      buffer = lines.pop() ?? ""
+
+      lines.forEach((line) => {
+        const result = JSON.parse(line)
+        console.log(result)
+      })
     }
   }
 
   return (
     <div className="m-4">
-      <button onClick={start} className="rounded-md bg-gray-500 p-2">
-        Start streaming
-      </button>
-
-      {text ? (
-        <p className="mt-4 text-gray-500">{text}</p>
-      ) : (
-        <p>Not streaming.</p>
-      )}
+      <button onClick={handleSearch}>search products</button>
     </div>
   )
 }
