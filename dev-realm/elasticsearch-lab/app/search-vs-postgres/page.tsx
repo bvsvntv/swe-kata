@@ -17,11 +17,11 @@ export default function Page() {
   const [query, setQuery] = useState<string>("")
 
   const pgResults = searchResults.find(
-    (product: SearchResult) => product.source === "PostgreSQL (ILIKE)"
+    (product: SearchResult) => product.source === "pg"
   )
 
   const esResults = searchResults.find(
-    (product: SearchResult) => product.source === "Elasticsearch"
+    (product: SearchResult) => product.source === "es"
   )
 
   async function handleSearch() {

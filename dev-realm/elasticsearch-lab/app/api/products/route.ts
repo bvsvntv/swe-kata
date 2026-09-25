@@ -17,7 +17,7 @@ const roundOff = (ms: number) => Number.parseFloat(ms.toFixed(2))
 type ProductRow = Product & { total_count: number }
 
 async function searchPostgres(term: string): Promise<SearchResult> {
-  const source = "PostgreSQL (ILIKE)"
+  const source = "pg"
   const pattern = `%${term}%`
   const start = performance.now()
 
@@ -65,7 +65,7 @@ async function searchPostgres(term: string): Promise<SearchResult> {
 }
 
 async function searchElastic(term: string): Promise<SearchResult> {
-  const source = "Elasticsearch"
+  const source = "es"
   const start = performance.now()
 
   try {
