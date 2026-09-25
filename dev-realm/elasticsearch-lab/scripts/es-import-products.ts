@@ -5,6 +5,8 @@ import { readCSV } from "@/utils/read-csv.util"
 
 dotenv.config({ path: "./.env" })
 
+type CsvRecord = Record<string, string>
+
 async function main() {
   const ELASTICSEARCH_INDEX_NAME = "products"
 
@@ -24,7 +26,7 @@ async function main() {
     process.exit(1)
   }
 
-  const records = readCSV("products-2000000.csv")
+  const records = readCSV("products-100000.csv") as CsvRecord[]
 
   // Import records into elasticsearch index
   try {
@@ -77,7 +79,12 @@ async function main() {
               raw: { type: "keyword" },
             },
           },
-          size: { type: "keyword" },
+          size: {
+            type: "text",
+            fields: {
+              raw: { type: "keyword" },
+            },
+          },
           availability: { type: "keyword" },
           price: { type: "scaled_float", scaling_factor: 100 },
           currency: { type: "keyword" },
@@ -92,7 +99,8 @@ async function main() {
 
     const validRecords = records
       .filter(
-        (record: any) =>
+        (record) =>
+          record.Index &&
           record["Internal ID"] &&
           record.Name &&
           record.Description &&
@@ -106,7 +114,8 @@ async function main() {
           record.Size &&
           record.Availability
       )
-      .map((record: any) => ({
+      .map((record) => ({
+        id: Number(record.Index),
         internalId: Number(record["Internal ID"]),
         name: record.Name,
         description: record.Description,
@@ -134,7 +143,7 @@ async function main() {
           {
             index: {
               _index: ELASTICSEARCH_INDEX_NAME,
-              _id: record.internalId,
+              _id: record.id,
             },
           },
           record,
@@ -155,11 +164,16 @@ async function main() {
               )
             }
           }
+
+          throw new Error(`Bulk indexing failed for batch starting at ${i}.`)
         } else {
           console.log(`${batch.length} records imported successfully.`)
         }
 
-        totalInserted += bulkResponse.items.length
+        totalInserted += bulkResponse.items.filter(
+          (item) =>
+            item.index?.result === "created" || item.index?.result === "updated"
+        ).length
         console.log(
           `Indexed ${totalInserted} / ${validRecords.length} products`
         )
@@ -169,6 +183,16 @@ async function main() {
       await esClient.indices.refresh({
         index: ELASTICSEARCH_INDEX_NAME,
       })
+
+      const indexedCount = await esClient.count({
+        index: ELASTICSEARCH_INDEX_NAME,
+      })
+      if (indexedCount.count !== validRecords.length) {
+        throw new Error(
+          `Indexed ${indexedCount.count} documents, expected ${validRecords.length}.`
+        )
+      }
+      console.log(`Verified ${indexedCount.count} indexed products.`)
     }
   } catch (e) {
     console.log(

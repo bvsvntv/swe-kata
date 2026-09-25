@@ -14,38 +14,52 @@ const esClient = new Client({
 
 const roundOff = (ms: number) => Number.parseFloat(ms.toFixed(2))
 
+type ProductRow = Product & { total_count: number }
+
 async function searchPostgres(term: string): Promise<SearchResult> {
   const source = "PostgreSQL (ILIKE)"
   const pattern = `%${term}%`
   const start = performance.now()
 
   try {
-    const rows = await sql<Product[]>`
-      SELECT id, internal_id, name, description, brand, category,
-             price, currency, stock, ean, color, size, availability
+    const rows = await sql<ProductRow[]>`
+      SELECT id, internal_id AS "internalId", name, description, brand, category,
+             price, currency, stock, ean, color, size, availability,
+             COUNT(*) OVER() AS total_count
       FROM products
       WHERE name ILIKE ${pattern}
          OR brand ILIKE ${pattern}
          OR category ILIKE ${pattern}
          OR description ILIKE ${pattern}
          OR color ILIKE ${pattern}
+         OR size ILIKE ${pattern}
       LIMIT 50
     `
 
+    const total = rows[0]?.total_count ?? 0
+    const products: Product[] = rows.map((row) => {
+      const { total_count, ...product } = row
+      void total_count
+      return product
+    })
+
     return {
       source,
-      products: [...rows],
+      products,
       latency: roundOff(performance.now() - start),
-      count: rows.length,
+      count: total,
       error: null,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       source,
       products: [],
       latency: roundOff(performance.now() - start),
       count: 0,
-      error: error?.message || "Failed to fetch from PostgreSQL",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch from PostgreSQL",
     }
   }
 }
@@ -58,6 +72,7 @@ async function searchElastic(term: string): Promise<SearchResult> {
     const result = await esClient.search({
       index: ELASTICSEARCH_INDEX_NAME,
       size: 50,
+      track_total_hits: true,
       query: {
         bool: {
           should: [
@@ -89,6 +104,11 @@ async function searchElastic(term: string): Promise<SearchResult> {
                 "color.raw": { value: `*${term}*`, case_insensitive: true },
               },
             },
+            {
+              wildcard: {
+                "size.raw": { value: `*${term}*`, case_insensitive: true },
+              },
+            },
           ],
           minimum_should_match: 1,
         },
@@ -112,13 +132,16 @@ async function searchElastic(term: string): Promise<SearchResult> {
       count: total as number,
       error: null,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       source,
       products: [],
       latency: roundOff(performance.now() - start),
       count: 0,
-      error: error?.message || "Failed to fetch from Elasticsearch",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch from Elasticsearch",
     }
   }
 }
@@ -139,17 +162,21 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  // Escape LIKE wildcards so input like "50%" or "a_b" is matched literally
-  const term = query.replace(/[\\%_]/g, "\\$&")
+  // Escape each query syntax independently so both searches match literal input.
+  const pgTerm = query.replace(/[\\%_]/g, "\\$&")
+  const esTerm = query.replace(/[\\*?]/g, "\\$&")
 
   const encoder = new TextEncoder()
-  const searches = [searchPostgres, searchElastic]
+  const searches = [
+    [searchPostgres, pgTerm] as const,
+    [searchElastic, esTerm] as const,
+  ]
 
   const stream = new ReadableStream({
     async start(controller) {
       try {
         await Promise.all(
-          searches.map(async (search) => {
+          searches.map(async ([search, term]) => {
             const result = await search(term)
             controller.enqueue(encoder.encode(JSON.stringify(result) + "\n"))
           })

@@ -5,6 +5,8 @@ import { readCSV } from "@/utils/read-csv.util"
 
 dotenv.config({ path: "./.env" })
 
+type CsvRecord = Record<string, string>
+
 async function main() {
   const dbURL = process.env.DATABASE_URL
   if (!dbURL) {
@@ -24,7 +26,7 @@ async function main() {
     process.exit(1)
   }
 
-  const records = readCSV("products-2000000.csv")
+  const records = readCSV("products-100000.csv") as CsvRecord[]
 
   // Import records into table
   try {
@@ -78,7 +80,8 @@ async function main() {
     // Validate records
     const validRecords = records
       .filter(
-        (record: any) =>
+        (record) =>
+          record.Index &&
           record["Internal ID"] &&
           record.Name &&
           record.Description &&
@@ -92,7 +95,8 @@ async function main() {
           record.Size &&
           record.Availability
       )
-      .map((record: any) => ({
+      .map((record) => ({
+        id: Number(record.Index),
         internalId: Number(record["Internal ID"]),
         name: record.Name,
         description: record.Description,
