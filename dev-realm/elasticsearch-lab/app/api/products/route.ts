@@ -21,7 +21,7 @@ async function searchPostgres(term: string): Promise<SearchResult> {
 
   try {
     const rows = await sql<Product[]>`
-      SELECT id, name, description, brand, category,
+      SELECT id, internal_id, name, description, brand, category,
              price, currency, stock, ean, color, size, availability
       FROM products
       WHERE name ILIKE ${pattern}
@@ -29,7 +29,6 @@ async function searchPostgres(term: string): Promise<SearchResult> {
          OR category ILIKE ${pattern}
          OR description ILIKE ${pattern}
          OR color ILIKE ${pattern}
-         OR size ILIKE ${pattern}
       LIMIT 50
     `
 
@@ -60,11 +59,38 @@ async function searchElastic(term: string): Promise<SearchResult> {
       index: ELASTICSEARCH_INDEX_NAME,
       size: 50,
       query: {
-        query_string: {
-          query: `*${term.toLowerCase()}*`,
-          fields: ["name", "brand", "category", "description", "color", "size"],
-          default_operator: "OR",
-          analyze_wildcard: true,
+        bool: {
+          should: [
+            {
+              wildcard: {
+                "name.raw": { value: `*${term}*`, case_insensitive: true },
+              },
+            },
+            {
+              wildcard: {
+                "brand.raw": { value: `*${term}*`, case_insensitive: true },
+              },
+            },
+            {
+              wildcard: {
+                "category.raw": { value: `*${term}*`, case_insensitive: true },
+              },
+            },
+            {
+              wildcard: {
+                "description.raw": {
+                  value: `*${term}*`,
+                  case_insensitive: true,
+                },
+              },
+            },
+            {
+              wildcard: {
+                "color.raw": { value: `*${term}*`, case_insensitive: true },
+              },
+            },
+          ],
+          minimum_should_match: 1,
         },
       },
     })
@@ -74,11 +100,16 @@ async function searchElastic(term: string): Promise<SearchResult> {
       id: Number(hit._id),
     }))
 
+    const total =
+      typeof result.hits.total === "number"
+        ? result.hits.total
+        : result.hits.total?.value
+
     return {
       source,
       products,
       latency: roundOff(performance.now() - start),
-      count: products.length,
+      count: total as number,
       error: null,
     }
   } catch (error: any) {
@@ -108,6 +139,9 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  // Escape LIKE wildcards so input like "50%" or "a_b" is matched literally
+  const term = query.replace(/[\\%_]/g, "\\$&")
+
   const encoder = new TextEncoder()
   const searches = [searchPostgres, searchElastic]
 
@@ -116,7 +150,7 @@ export async function GET(request: NextRequest) {
       try {
         await Promise.all(
           searches.map(async (search) => {
-            const result = await search(query)
+            const result = await search(term)
             controller.enqueue(encoder.encode(JSON.stringify(result) + "\n"))
           })
         )

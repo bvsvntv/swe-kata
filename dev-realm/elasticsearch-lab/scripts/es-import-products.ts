@@ -47,17 +47,36 @@ async function main() {
         properties: {
           id: { type: "integer" },
           internalId: { type: "integer" },
-
           name: {
             type: "text",
             fields: {
-              keyword: { type: "keyword", ignore_above: 256 },
+              raw: { type: "keyword" },
             },
           },
-          description: { type: "text" },
-          brand: { type: "keyword" },
-          category: { type: "keyword" },
-          color: { type: "keyword" },
+          description: {
+            type: "text",
+            fields: {
+              raw: { type: "keyword" },
+            },
+          },
+          brand: {
+            type: "text",
+            fields: {
+              raw: { type: "keyword" },
+            },
+          },
+          category: {
+            type: "text",
+            fields: {
+              raw: { type: "keyword" },
+            },
+          },
+          color: {
+            type: "text",
+            fields: {
+              raw: { type: "keyword" },
+            },
+          },
           size: { type: "keyword" },
           availability: { type: "keyword" },
           price: { type: "scaled_float", scaling_factor: 100 },
