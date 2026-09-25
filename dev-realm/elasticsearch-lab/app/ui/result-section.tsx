@@ -1,35 +1,64 @@
 import { SearchResult } from "../types"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import ProductList from "./product-list"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Clock01Icon } from "@hugeicons/core-free-icons"
 
 export default function ResultSection({
   title,
   searchResult,
 }: {
   title: string
-  searchResult: SearchResult
+  searchResult?: SearchResult
 }) {
   return (
-    <section>
-      <h3 className="mt-4 font-semibold">{title}</h3>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
 
-      <div className="mt-2">
+      <CardContent className="flex-1">
         {searchResult ? (
-          <div className="mt-2">
-            {searchResult.error ? (
-              <p className="text-sm text-red-500">{searchResult.error}</p>
-            ) : (
-              <ProductList products={searchResult.products} />
-            )}
-
-            <div className="mt-2 flex justify-between">
-              <p className="text-xs">Latency: {searchResult.latency}ms</p>
-              <p className="text-xs">Found: {searchResult.count}</p>
-            </div>
-          </div>
+          searchResult.error ? (
+            <Alert variant="destructive">
+              <AlertDescription>{searchResult.error}</AlertDescription>
+            </Alert>
+          ) : (
+            <ProductList products={searchResult.products} />
+          )
         ) : (
-          <p className="text-gray-500">Waiting for search.</p>
+          <Empty className="min-h-40 border">
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon icon={Clock01Icon} strokeWidth={1.5} />
+            </EmptyMedia>
+            <EmptyTitle>Waiting for search.</EmptyTitle>
+            <EmptyDescription>
+              Write something in the search bar and hit Enter key.
+            </EmptyDescription>
+          </Empty>
         )}
-      </div>
-    </section>
+      </CardContent>
+
+      {searchResult && !searchResult.error && (
+        <CardFooter className="justify-between gap-2 border-t">
+          <Badge variant="secondary">Latency: {searchResult.latency}ms</Badge>
+          <Badge variant="outline">Found: {searchResult.count}</Badge>
+        </CardFooter>
+      )}
+    </Card>
   )
 }
