@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/input-group"
 import { Button } from "@/components/ui/button"
 import { SearchResult } from "../types"
-import ResultSection from "../ui/result-section"
+import ResultSection from "./ui/result-section"
 
 export default function Page() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])

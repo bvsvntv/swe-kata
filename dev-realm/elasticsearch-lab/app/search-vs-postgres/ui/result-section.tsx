@@ -1,4 +1,3 @@
-import { SearchResult } from "../types"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -17,6 +16,7 @@ import {
 import ProductList from "./product-list"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Clock01Icon } from "@hugeicons/core-free-icons"
+import { SearchResult } from "@/app/types"
 
 export default function ResultSection({
   title,
@@ -27,7 +27,7 @@ export default function ResultSection({
 }) {
   return (
     <Card className="h-full">
-      <CardHeader>
+      <CardHeader className="border-b">
         <CardTitle>{title}</CardTitle>
       </CardHeader>
 

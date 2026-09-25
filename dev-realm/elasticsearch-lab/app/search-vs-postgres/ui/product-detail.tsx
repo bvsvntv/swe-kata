@@ -1,4 +1,4 @@
-import { Product } from "../types"
+import { Product } from "@/app/types"
 
 export default function ProductDetail({ product }: { product: Product }) {
   return (
